@@ -1,0 +1,350 @@
+package com.example.ilona.ilonarecorder;
+
+import android.bluetooth.BluetoothAdapter;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.net.Uri;
+import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.EditText;
+import android.widget.Spinner;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.android.gms.appindexing.Action;
+import com.google.android.gms.appindexing.AppIndex;
+import com.google.android.gms.common.api.GoogleApiClient;
+
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ExecutionException;
+
+import uni.miskolc.ips.ilona.measurement.model.measurement.BluetoothTags;
+import uni.miskolc.ips.ilona.measurement.model.measurement.Magnetometer;
+import uni.miskolc.ips.ilona.measurement.model.measurement.Measurement;
+import uni.miskolc.ips.ilona.measurement.model.measurement.MeasurementBuilder;
+import uni.miskolc.ips.ilona.measurement.model.measurement.WiFiRSSI;
+import uni.miskolc.ips.ilona.measurement.model.position.Coordinate;
+import uni.miskolc.ips.ilona.measurement.model.position.Zone;
+
+/**
+ * TODO clean up, refactor and comment on code
+ */
+
+public class Ilona_Activity extends AppCompatActivity implements SensorEventListener {
+    // variable members
+
+    ResponseReceiver mDownloadStateReceiver = new ResponseReceiver();
+    ResponseReceiver mBlDownloadReceiver = new ResponseReceiver();
+    SensorManager mSensorManager;
+    Sensor mMagnetometer;
+    float[] magneto;
+    Measurement measurement;
+    Map<String,Double> rssivalue;
+    ArrayList<String> bluetootharray;
+    private GoogleApiClient client;
+    Zone[] zones = new Zone[0];
+    Spinner spinner;
+
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_ilona);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        //Initializes the magnetometer.
+        mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        List<Sensor> deviceSensors = mSensorManager.getSensorList(Sensor.TYPE_ALL);
+        mMagnetometer = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
+
+        //Starts the WiFi collection service.
+        Intent serviceIntent = new Intent(this, RSSIService.class);
+        this.startService(serviceIntent);
+
+        // Starts the Bluetooth collection service.
+        serviceIntent = new Intent(this, BluetoothService.class);
+        this.startService(serviceIntent);
+
+        // Filter for catching the implicit intent of WifiRSSI services.
+        IntentFilter mStatusIntentFilter = null;
+        mStatusIntentFilter = new IntentFilter(
+                Constants.BROADCAST_ACTION);
+
+        // Insterts the appropriate code to catch broadcasts.
+        LocalBroadcastManager.getInstance(this).registerReceiver(
+                mDownloadStateReceiver,
+                mStatusIntentFilter);
+        //Filter for catching the implicit intent of bluetooth service.
+        IntentFilter mBLIntentFilter = new IntentFilter(Constants.BLUETOOTH_BROADCAST);
+        LocalBroadcastManager.getInstance(this).registerReceiver(mBlDownloadReceiver, mBLIntentFilter);
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
+
+        // gets the collection of zone to display it on the spinner.
+        String text = null;
+        IlonaZoneConnection conn = new IlonaZoneConnection();
+        URL url = null;
+        try {
+            url = new URL("http://grabowski.iit.uni-miskolc.hu:8080/ilona/listZones");
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+        try {
+            text = conn.execute(url).get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            this.zones =objectMapper.readValue(text,Zone[].class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_ilona, menu);
+        return true;
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_settings) {
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+
+    //The method runs when the main action button is pressed on the layout.
+    //Gets the WiFi, Bluetooth, magnetometer, position coordinates and current zone and
+    // creates a member of the measurement class.
+    public void receiveMeasurement(View view) {
+        //Initialize the variables.
+        int duration = Toast.LENGTH_SHORT;
+        Context context = getApplicationContext();
+        MeasurementBuilder measBukilder = new MeasurementBuilder();
+        Magnetometer magnetometer = new Magnetometer(magneto[0],magneto[1], magneto[2],0);
+
+        //Getting the WifiRSSI and bluetooth values from the services.
+        if(rssivalue != null) {
+            WiFiRSSI rssi = new WiFiRSSI(rssivalue);
+            measBukilder.setWifiRSSI(rssi);
+        }
+
+        if(bluetootharray != null) {
+            BluetoothTags tags = new BluetoothTags(new HashSet<String>(bluetootharray));
+            measBukilder.setbluetoothTags(tags);
+
+        }
+        measBukilder.setMagnetometer(magnetometer);
+        // Gettomg the zone and the coordinates to build the measurement
+        Zone zone =(Zone) spinner.getSelectedItem();
+        EditText editText1=(EditText) findViewById(R.id.edit_coord1);
+        Double coord1= Double.parseDouble(editText1.getText().toString());
+        EditText editText2=(EditText) findViewById(R.id.edit_coord2);
+        Double coord2= Double.parseDouble(editText2.getText().toString());
+        EditText editText3=(EditText) findViewById(R.id.edit_coord3);
+        Double coord3=Double.parseDouble(editText3.getText().toString());
+        Coordinate coordinates=new Coordinate(coord1,coord2,coord3);
+        measBukilder.setPosition(zone);
+        measBukilder.setPosition(coordinates);
+        //Building measurement
+        measurement = measBukilder.build();
+        measurement.setId(UUID.randomUUID());
+        Log.d("alma",measurement.toString());
+
+        String text = measurement.toString();
+        Toast toast = Toast.makeText(context, text, duration);
+        toast.show();
+    }
+
+    // Sends the previously recorded measurement to the server.
+
+    public void sendToServer(View view) throws ExecutionException, InterruptedException {
+        String text;
+        // Starts the method which connects to the server and sends the measurement.
+        if (measurement!=null) {
+            IlonaConnection conn = new IlonaConnection(measurement);
+            text = conn.execute(measurement.toString()).get();
+        }else{
+            // if the measurement hasn't been initialized yet.
+            text="Please get measurements first!";
+        }
+        Context context = getApplicationContext();
+        int duration = Toast.LENGTH_SHORT;
+        Toast toast = Toast.makeText(context, text, duration);
+        toast.show();
+    }
+
+
+    // Magnetometer API method that refreshes the values when they change
+    @Override
+    public void onSensorChanged(SensorEvent sensorEvent) {
+        magneto = sensorEvent.values;
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int i) {
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mSensorManager.registerListener(this, mMagnetometer, SensorManager.SENSOR_DELAY_NORMAL);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mSensorManager.unregisterListener(this);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        spinner= (Spinner) findViewById(R.id.zone_spinner);
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        client.connect();
+
+        Action viewAction = Action.newAction(
+                Action.TYPE_VIEW, // TODO: choose an action type.
+                "Main Page", // TODO: Define a title for the content shown.
+                // TODO: If you have web page content that matches this app activity's content,
+                // make sure this auto-generated web page URL is correct.
+                // Otherwise, set the URL to null.
+                Uri.parse("http://host/path"),
+                // TODO: Make sure this auto-generated app URL is correct.
+                Uri.parse("android-app://com.example.ilona.ilonarecorder/http/host/path")
+        );
+
+        AppIndex.AppIndexApi.start(client, viewAction);
+        //Toast to remind the user to wait a few moments to get the measurements.
+        int duration = Toast.LENGTH_LONG;
+        Context context = getApplicationContext();
+        // Checks if bluetooth and wifi is enabled
+        String text;
+        BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        if (!mBluetoothAdapter.isEnabled()) {
+            text="Bluetooth isn't enabled";
+        }else {text="Bluetooth is enabled";}
+
+        ConnectivityManager connManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo mWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+
+        if (mWifi.isConnected()) {
+            text=text+" and WiFi is enabled";
+        }else {text=text+" and Wifi isn't enabled";}
+
+        Toast toast = Toast.makeText(context, text, duration);
+        toast.show();
+        // Spinner adapter
+        ArrayAdapter<Zone> adapter = new ArrayAdapter<Zone>(this, android.R.layout.simple_spinner_item, zones){
+            @Override
+            public View getView(int position, View convertView, ViewGroup parent) {
+                // Get the data item for this position
+                Zone zone = getItem(position);
+                // Check if an existing view is being reused, otherwise inflate the view
+                if (convertView == null) {
+                    convertView = LayoutInflater.from(getContext()).inflate(R.layout.support_simple_spinner_dropdown_item, parent, false);
+                }
+//                convertView.setTag(zone.getName());
+                ((TextView)convertView).setText(zone.getName());
+                // Return the completed view to render on screen
+                return convertView;
+            }
+
+            @Override
+            public View getDropDownView(int position, View convertView, ViewGroup parent) {
+                View result = super.getDropDownView(position, convertView, parent);
+                Zone zone = getItem(position);
+                if(zone == null){
+                    return result;
+                }
+                ((TextView)result).setText(zone.getName());
+                return  result;
+            }
+        };
+        spinner.setAdapter(adapter);
+//        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        Action viewAction = Action.newAction(
+                Action.TYPE_VIEW, // TODO: choose an action type.
+                "Main Page", // TODO: Define a title for the content shown.
+                // TODO: If you have web page content that matches this app activity's content,
+                // make sure this auto-generated web page URL is correct.
+                // Otherwise, set the URL to null.
+                Uri.parse("http://host/path"),
+                // TODO: Make sure this auto-generated app URL is correct.
+                Uri.parse("android-app://com.example.ilona.ilonarecorder/http/host/path")
+        );
+        AppIndex.AppIndexApi.end(client, viewAction);
+        client.disconnect();
+
+    }
+    // Handles incoming broadcasts from MyIntentService and BluetoothService.
+    class ResponseReceiver extends BroadcastReceiver {
+
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if (action == Constants.BROADCAST_ACTION) {
+                rssivalue = (HashMap<String, Double>)intent.getSerializableExtra(Constants.EXTENDED_DATA_STATUS);
+            } else if (action == Constants.BLUETOOTH_BROADCAST) {
+                bluetootharray = new ArrayList<>();
+                bluetootharray = intent.getStringArrayListExtra(Constants.BLUETOOTH_DATA_STATUS);
+            }
+
+        }
+    }
+}
