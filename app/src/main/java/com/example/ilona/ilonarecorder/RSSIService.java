@@ -38,6 +38,7 @@ public class RSSIService extends IntentService {
 
             // Iterates through the detected WiFi devies and saves the SSID and the RSSI into an array.
             while (size > 0) {
+                //  results.get(size).level= filter valami
                 hashMap.put(results.get(size).SSID, Double.valueOf(results.get(size).level));
                 size--;
             }
