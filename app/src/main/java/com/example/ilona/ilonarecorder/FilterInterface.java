@@ -6,6 +6,6 @@ package com.example.ilona.ilonarecorder;
 interface FilterInterface {
     int RSSIlevel = 0;
 
-    void filteringmethod();
+    int filteringmethod();
 
 }
