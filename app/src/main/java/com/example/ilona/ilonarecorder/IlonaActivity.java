@@ -41,7 +41,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
 import uni.miskolc.ips.ilona.measurement.model.measurement.BluetoothTags;
@@ -50,13 +49,14 @@ import uni.miskolc.ips.ilona.measurement.model.measurement.Measurement;
 import uni.miskolc.ips.ilona.measurement.model.measurement.MeasurementBuilder;
 import uni.miskolc.ips.ilona.measurement.model.measurement.WiFiRSSI;
 import uni.miskolc.ips.ilona.measurement.model.position.Coordinate;
+import uni.miskolc.ips.ilona.measurement.model.position.Position;
 import uni.miskolc.ips.ilona.measurement.model.position.Zone;
 
 /**
  * TODO clean up, refactor and comment on code
  */
 
-public class Ilona_Activity extends AppCompatActivity implements SensorEventListener {
+public class IlonaActivity extends AppCompatActivity implements SensorEventListener {
     // variable members
 
     ResponseReceiver mDownloadStateReceiver = new ResponseReceiver();
@@ -67,10 +67,9 @@ public class Ilona_Activity extends AppCompatActivity implements SensorEventList
     Measurement measurement;
     Map<String,Double> rssivalue;
     ArrayList<String> bluetootharray;
-    private GoogleApiClient client;
     Zone[] zones = new Zone[0];
     Spinner spinner;
-
+    private GoogleApiClient client;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,7 +92,7 @@ public class Ilona_Activity extends AppCompatActivity implements SensorEventList
         this.startService(serviceIntent);
 
         // Filter for catching the implicit intent of WifiRSSI services.
-        IntentFilter mStatusIntentFilter = null;
+        IntentFilter mStatusIntentFilter;
         mStatusIntentFilter = new IntentFilter(
                 Constants.BROADCAST_ACTION);
 
@@ -119,9 +118,9 @@ public class Ilona_Activity extends AppCompatActivity implements SensorEventList
         }
         try {
             text = conn.execute(url).get();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
         } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
         ObjectMapper objectMapper = new ObjectMapper();
@@ -166,6 +165,10 @@ public class Ilona_Activity extends AppCompatActivity implements SensorEventList
         int duration = Toast.LENGTH_SHORT;
         Context context = getApplicationContext();
         MeasurementBuilder measBukilder = new MeasurementBuilder();
+        double lenght = Math.sqrt((magneto[0] * magneto[0]) + (magneto[1] * magneto[1]) + (magneto[2] * magneto[2]));
+        magneto[0] = (float) (magneto[0] / lenght);
+        magneto[1] = (float) (magneto[1] / lenght);
+        magneto[2] = (float) (magneto[2] / lenght);
         Magnetometer magnetometer = new Magnetometer(magneto[0],magneto[1], magneto[2],0);
 
         //Getting the WifiRSSI and bluetooth values from the services.
@@ -175,7 +178,7 @@ public class Ilona_Activity extends AppCompatActivity implements SensorEventList
         }
 
         if(bluetootharray != null) {
-            BluetoothTags tags = new BluetoothTags(new HashSet<String>(bluetootharray));
+            BluetoothTags tags = new BluetoothTags(new HashSet<>(bluetootharray));
             measBukilder.setbluetoothTags(tags);
 
         }
@@ -189,13 +192,12 @@ public class Ilona_Activity extends AppCompatActivity implements SensorEventList
         EditText editText3=(EditText) findViewById(R.id.edit_coord3);
         Double coord3=Double.parseDouble(editText3.getText().toString());
         Coordinate coordinates=new Coordinate(coord1,coord2,coord3);
-        measBukilder.setPosition(zone);
-        measBukilder.setPosition(coordinates);
+        Position position = new Position(coordinates, zone);
+        measBukilder.setPosition(position);
         //Building measurement
         measurement = measBukilder.build();
-        measurement.setId(UUID.randomUUID());
         Log.d("alma",measurement.toString());
-
+        //measurement.setId(UUID.randomUUID());
         String text = measurement.toString();
         Toast toast = Toast.makeText(context, text, duration);
         toast.show();
@@ -338,9 +340,9 @@ public class Ilona_Activity extends AppCompatActivity implements SensorEventList
 
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
-            if (action == Constants.BROADCAST_ACTION) {
+            if (action.equals(Constants.BROADCAST_ACTION)) {
                 rssivalue = (HashMap<String, Double>)intent.getSerializableExtra(Constants.EXTENDED_DATA_STATUS);
-            } else if (action == Constants.BLUETOOTH_BROADCAST) {
+            } else if (action.equals(Constants.BLUETOOTH_BROADCAST)) {
                 bluetootharray = new ArrayList<>();
                 bluetootharray = intent.getStringArrayListExtra(Constants.BLUETOOTH_DATA_STATUS);
             }

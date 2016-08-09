@@ -6,13 +6,10 @@ import android.util.Log;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
-import org.json.JSONObject;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 
 
@@ -62,22 +59,15 @@ public class IlonaConnection extends AsyncTask<String,String,String> {
             while ((ch = is.read()) != -1) {
                 sb.append((char) ch);
             }
-
+            String zoneresult = sb.toString();
             // Returns the received data to the main activity
-            JSONObject zoneresult=new JSONObject(sb.toString());
-            Log.d("position", zoneresult.toString());
-            Log.d("results",zoneresult.getJSONObject("zone").getString("name"));
             out.close();
-            return zoneresult.getJSONObject("zone").getString("name");
+            return zoneresult;
 
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
         } catch (IOException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
             e.printStackTrace();
         }
 
-        return "Error!, check your wifi!";
+        return "false";
     }
 }
