@@ -340,9 +340,9 @@ public class IlonaActivity extends AppCompatActivity implements SensorEventListe
 
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
-            if (action.equals(Constants.BROADCAST_ACTION)) {
+            if (action == Constants.BROADCAST_ACTION) {
                 rssivalue = (HashMap<String, Double>)intent.getSerializableExtra(Constants.EXTENDED_DATA_STATUS);
-            } else if (action.equals(Constants.BLUETOOTH_BROADCAST)) {
+            } else if (action == Constants.BLUETOOTH_BROADCAST) {
                 bluetootharray = new ArrayList<>();
                 bluetootharray = intent.getStringArrayListExtra(Constants.BLUETOOTH_DATA_STATUS);
             }
