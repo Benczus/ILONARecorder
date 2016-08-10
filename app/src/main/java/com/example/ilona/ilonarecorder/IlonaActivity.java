@@ -156,6 +156,22 @@ public class IlonaActivity extends AppCompatActivity implements SensorEventListe
         return super.onOptionsItemSelected(item);
     }
 
+    public void getPosition(View view) throws ExecutionException, InterruptedException {
+        String text;
+        // Starts the method which connects to the server and sends the measurement.
+        if (measurement != null) {
+            IlonaPositionConnection conn = new IlonaPositionConnection(measurement);
+            text = conn.execute(measurement.toString()).get();
+        } else {
+            // if the measurement hasn't been initialized yet.
+            text = "Please get measurements first!";
+        }
+        Context context = getApplicationContext();
+        int duration = Toast.LENGTH_SHORT;
+        Toast toast = Toast.makeText(context, text, duration);
+        toast.show();
+    }
+
 
     //The method runs when the main action button is pressed on the layout.
     //Gets the WiFi, Bluetooth, magnetometer, position coordinates and current zone and
