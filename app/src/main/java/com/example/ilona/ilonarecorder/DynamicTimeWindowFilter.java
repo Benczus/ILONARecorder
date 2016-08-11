@@ -29,7 +29,7 @@ public class DynamicTimeWindowFilter implements FilterInterface {
         for (String ssid : getKeys(linkedList)) {
             ArrayList<Double> rssiValues = getWiFiRSSIVector(ssid, linkedList);
             double filteredValue = rssiValues.get(0);
-            if (rssiValues.get(0) != null && rssiValues.get(1) != null) {
+            if (rssiValues.size() > 1) {
                 double difference = rssiValues.get(0) - rssiValues.get(1);
                 if ((difference > threshold)) {
                     filteredValue = filter(rssiValues);

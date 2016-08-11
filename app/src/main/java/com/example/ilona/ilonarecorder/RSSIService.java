@@ -18,6 +18,7 @@ import java.util.Map;
 public class RSSIService extends IntentService {
 
     final static int MEMSIZE = 5;
+    final static int THRESHOLD = 5;
     public static int MAX_MEMORY_SIZE = 20;
     LinkedList<Map<String, Double>> previousValues;
     FilterInterface filter;
@@ -25,7 +26,7 @@ public class RSSIService extends IntentService {
     public RSSIService() {
         super("MyIntentService");
         previousValues = new LinkedList<Map<String, Double>>();
-        filter = new HorusFilter(MEMSIZE);
+        filter = new StaticTimeWindowFilter(MEMSIZE, THRESHOLD);
 
     }
     @Override
@@ -45,8 +46,6 @@ public class RSSIService extends IntentService {
             }
             previousValues.push(currentWifiRSSI);
             Map<String, Double> filteredWifiRSSI = filter.filteringmethod(previousValues);
-//            previousValues.remove(previousValues.getFirst());
-//            previousValues.push(hashMap);
             if (previousValues.size() > MAX_MEMORY_SIZE) {
                 previousValues.pop();
             }
