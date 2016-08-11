@@ -1,37 +1,64 @@
 package com.example.ilona.ilonarecorder;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.Set;
+
 /**
  * Created by ilona on 2016.08.09..
  */
 public class HorusFilter implements FilterInterface {
 
-    private int value;
     private int memsize;
-    private int[] rssivalues;
-    private int[] results;
 
-    public HorusFilter(int[] rssivalues, int memsize) {
-        this.rssivalues = rssivalues;
+
+    public HorusFilter(int memsize) {
         this.memsize = memsize;
     }
-    //takes the last 5 values,
-    //TODO check if it is after the first 5 values.
 
-    public static double mean(int[] m) {
-        double sum = 0;
-        for (int i = 0; i < m.length; i++) {
-            sum += m[i];
-        }
-        return sum / m.length;
-    }
 
     @Override
-    public int filteringmethod() {
-        for (int i = 0; i <= memsize; i++) {
-            results[i] = rssivalues[memsize + i];
+    public Map<String, Double> filteringmethod(LinkedList<Map<String, Double>> linkedList) {
+        if (linkedList.size() < memsize) {
+            return linkedList.getFirst();
         }
-        value = (int) mean(results);
-        return value;
+        Map<String, Double> result = new HashMap<String, Double>();
+        for (String ssid : getKeys(linkedList)) {
+            ArrayList<Double> rssiValues = getWiFiRSSIVector(ssid, linkedList);
+            double filteredValue = filter(rssiValues);
+            result.put(ssid, filteredValue);
+        }
+        return result;
     }
+
+    private Set<String> getKeys(LinkedList<Map<String, Double>> linkedList) {
+        Set<String> result = new HashSet<String>();
+        for (int i = 0; i < linkedList.size(); i++) {
+            result.addAll(linkedList.get(i).keySet());
+        }
+        return result;
+    }
+
+    private ArrayList<Double> getWiFiRSSIVector(String ssid, LinkedList<Map<String, Double>> linkedList) {
+        ArrayList<Double> result = new ArrayList<>();
+        for (int i = 0; i < memsize; i++) {
+            if (linkedList.get(i).get(ssid) != null) {
+                result.add(linkedList.get(i).get(ssid));
+            }
+        }
+        return result;
+    }
+
+    private double filter(ArrayList<Double> m) {
+        double sum = 0;
+        for (int i = 0; i < m.size(); i++) {
+            sum += m.get(i);
+        }
+        return sum / m.size();
+    }
+
 }
 
