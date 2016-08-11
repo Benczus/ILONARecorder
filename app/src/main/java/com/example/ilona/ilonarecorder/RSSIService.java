@@ -56,7 +56,6 @@ public class RSSIService extends IntentService {
             // Broadcasting
             int interval = 12000;
             SystemClock.sleep(interval);
-
         }
     }
 }

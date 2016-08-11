@@ -1,42 +1,70 @@
-//package com.example.ilona.ilonarecorder;
-//
-///**
-// * Created by ilona on 2016.08.09..
-// */
-//public class StaticTimeWindowFilter implements FilterInterface {
-//    private final double threshold;
-//    private int value;
-//    private int memsize;
-//    private int[] rssivalues;
-//    private int[] results;
-//
-//    public StaticTimeWindowFilter(int[] rssivalues, int memsize, double threshold) {
-//        this.rssivalues = rssivalues;
-//        this.threshold = threshold;
-//        this.memsize = memsize;
-//    }
-//
-//    public static double mean(int[] m) {
-//        double sum = 0;
-//        for (int i = 0; i < m.length; i++) {
-//            sum += m[i];
-//        }
-//        return sum / m.length;
-//    }
-//
-//    @Override
-//    //takes the last 5 values,
-//    //TODO check if it is after the first 5 values.
-//
-//    public double filteringmethod() {
-//        if (Math.abs(rssivalues[0] - rssivalues[1]) > threshold) {
-//            for (int i = 0; i <= memsize; i++) {
-//                results[i] = rssivalues[memsize + i];
-//            }
-//            value = (int) mean(results);
-//            return value;
-//        }
-//        return rssivalues[0];
-//
-//    }
-//}
+package com.example.ilona.ilonarecorder;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.Set;
+
+/**
+ * Created by ilona on 2016.08.09..
+ */
+public class StaticTimeWindowFilter implements FilterInterface {
+    private double threshold;
+    private int memsize;
+
+
+    public StaticTimeWindowFilter(int memsize, double threshold) {
+        this.threshold = threshold;
+        this.memsize = memsize;
+    }
+
+    @Override
+    public Map<String, Double> filteringmethod(LinkedList<Map<String, Double>> linkedList) {
+        if (linkedList.size() < memsize) {
+            return linkedList.getFirst();
+        }
+        Map<String, Double> result = new HashMap<String, Double>();
+        ArrayList<Double> rssiValues = null;
+        for (String ssid : getKeys(linkedList)) {
+            rssiValues = getWiFiRSSIVector(ssid, linkedList);
+            double filteredValue = rssiValues.get(0);
+            if (rssiValues.get(0) != null && rssiValues.get(1) != null) {
+                double difference = rssiValues.get(0) - rssiValues.get(1);
+                if ((difference > threshold)) {
+                    filteredValue = filter(rssiValues);
+                }
+            }
+            result.put(ssid, filteredValue);
+        }
+        threshold = new Statistics(rssiValues).getStdDev();
+        return result;
+    }
+
+    private Set<String> getKeys(LinkedList<Map<String, Double>> linkedList) {
+        Set<String> result = new HashSet<String>();
+        for (int i = 0; i < linkedList.size(); i++) {
+            result.addAll(linkedList.get(i).keySet());
+        }
+        return result;
+    }
+
+    private ArrayList<Double> getWiFiRSSIVector(String ssid, LinkedList<Map<String, Double>> linkedList) {
+        ArrayList<Double> result = new ArrayList<>();
+        for (int i = 0; i < memsize; i++) {
+            if (linkedList.get(i).get(ssid) != null) {
+                result.add(linkedList.get(i).get(ssid));
+            }
+        }
+        return result;
+    }
+
+    private double filter(ArrayList<Double> m) {
+        double sum = 0;
+        for (int i = 0; i < m.size(); i++) {
+            sum += m.get(i);
+        }
+        return sum / m.size();
+    }
+}
