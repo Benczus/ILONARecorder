@@ -7,9 +7,7 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * Created by ilona on 2016.08.09..
- */
+
 public class HorusFilter implements FilterInterface {
 
     private int memsize;

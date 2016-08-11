@@ -12,9 +12,7 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-/**
- * Created by ilona on 2016.08.01..
- */
+
 public class IlonaZoneConnection extends AsyncTask<URL, Integer ,String  >{
 
     public IlonaZoneConnection() {

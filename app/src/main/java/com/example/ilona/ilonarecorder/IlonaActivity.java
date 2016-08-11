@@ -52,9 +52,6 @@ import uni.miskolc.ips.ilona.measurement.model.position.Coordinate;
 import uni.miskolc.ips.ilona.measurement.model.position.Position;
 import uni.miskolc.ips.ilona.measurement.model.position.Zone;
 
-/**
- * TODO clean up, refactor and comment on code
- */
 
 public class IlonaActivity extends AppCompatActivity implements SensorEventListener {
     // variable members

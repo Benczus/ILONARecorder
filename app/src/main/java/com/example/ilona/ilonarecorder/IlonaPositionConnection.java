@@ -12,9 +12,7 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-/**
- * Created by ilona on 2016.08.10..
- */
+
 public class IlonaPositionConnection extends AsyncTask<String, String, String> {
     uni.miskolc.ips.ilona.measurement.model.measurement.Measurement measurement;
 
