@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 
 
+//Implementation of the Dynamic Time Windowing Filter.
 public class DynamicTimeWindowFilter implements FilterInterface {
     private double threshold;
     private int memsize;
@@ -17,6 +18,8 @@ public class DynamicTimeWindowFilter implements FilterInterface {
         this.memsize = memsize;
 
     }
+
+    //Main filtering method
 
     @Override
     public Map<String, Double> filteringmethod(LinkedList<Map<String, Double>> linkedList) {

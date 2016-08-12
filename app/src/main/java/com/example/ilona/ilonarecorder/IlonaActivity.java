@@ -174,15 +174,17 @@ public class IlonaActivity extends AppCompatActivity implements SensorEventListe
     //Gets the WiFi, Bluetooth, magnetometer, position coordinates and current zone and
     // creates a member of the measurement class.
     public void receiveMeasurement(View view) {
-        //Initialize the variables.
         int duration = Toast.LENGTH_SHORT;
         Context context = getApplicationContext();
+        Magnetometer magnetometer = new Magnetometer();
         MeasurementBuilder measBukilder = new MeasurementBuilder();
-        double lenght = Math.sqrt((magneto[0] * magneto[0]) + (magneto[1] * magneto[1]) + (magneto[2] * magneto[2]));
-        magneto[0] = (float) (magneto[0] / lenght);
-        magneto[1] = (float) (magneto[1] / lenght);
-        magneto[2] = (float) (magneto[2] / lenght);
-        Magnetometer magnetometer = new Magnetometer(magneto[0],magneto[1], magneto[2],0);
+        if (magneto != null) {
+            double lenght = Math.sqrt((magneto[0] * magneto[0]) + (magneto[1] * magneto[1]) + (magneto[2] * magneto[2]));
+            magneto[0] = (float) (magneto[0] / lenght);
+            magneto[1] = (float) (magneto[1] / lenght);
+            magneto[2] = (float) (magneto[2] / lenght);
+            magnetometer = new Magnetometer(magneto[0], magneto[1], magneto[2], 0);
+        }
 
         //Getting the WifiRSSI and bluetooth values from the services.
         if(rssivalue != null) {
@@ -195,6 +197,7 @@ public class IlonaActivity extends AppCompatActivity implements SensorEventListe
             measBukilder.setbluetoothTags(tags);
 
         }
+
         measBukilder.setMagnetometer(magnetometer);
         // Gettomg the zone and the coordinates to build the measurement
         Zone zone =(Zone) spinner.getSelectedItem();

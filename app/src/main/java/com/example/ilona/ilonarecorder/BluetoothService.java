@@ -18,13 +18,26 @@ public class BluetoothService extends IntentService {
     BluetoothAdapter mBluetoothAdapter;
     Set<BluetoothDevice> pairedDevices;
     ArrayList<String> mArrayAdapter;
+    //The bluetooth API automatically send a ACTION_FOUND broadcast from the startDiscovery() method,
+    //the receiver receives it, and ands the device name and address to the string array.
+    private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if (BluetoothDevice.ACTION_FOUND.equals(action)) {
+                BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+                if (!mArrayAdapter.contains(device.getName() + " " + device.getAddress())) {
+                    mArrayAdapter.add(device.getName() + " " + device.getAddress());
+                }
+            }
+
+        }
+    };
 
 
     public BluetoothService() {
         super("BluetoothService");
 
     }
-
 
     @Override
     protected void onHandleIntent(Intent intent) {
@@ -45,7 +58,7 @@ public class BluetoothService extends IntentService {
             }
 
             // Discovers the bluetooth competible devices inside the range of the device.
-            boolean a= mBluetoothAdapter.startDiscovery();
+            mBluetoothAdapter.startDiscovery();
             // Bundles the string array of the devices into an intent and sends it to MainActivity.
             Intent localIntent = new Intent(Constants.BLUETOOTH_BROADCAST);
             localIntent.putExtra(Constants.BLUETOOTH_DATA_STATUS, mArrayAdapter);
@@ -54,21 +67,6 @@ public class BluetoothService extends IntentService {
             SystemClock.sleep(interval);
         }
     }
-
-    //The bluetooth API automatically send a ACTION_FOUND broadcast from the startDiscovery() method,
-    //the receiver receives it, and ands the device name and address to the string array.
-    private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
-        public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
-            if (BluetoothDevice.ACTION_FOUND.equals(action)) {
-                BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                if (!mArrayAdapter.contains(device.getName() + " " + device.getAddress())) {
-                    mArrayAdapter.add(device.getName() + " " + device.getAddress());
-                }
-            }
-
-        }
-    };
 
 }
 

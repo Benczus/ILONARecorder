@@ -17,45 +17,56 @@ import java.util.Map;
 
 public class RSSIService extends IntentService {
 
+    // switch for filtering
+    final static boolean FILTER_SWITCH = false;
+
+
     final static int MEMSIZE = 5;
     final static int THRESHOLD = 5;
     public static int MAX_MEMORY_SIZE = 20;
     LinkedList<Map<String, Double>> previousValues;
     FilterInterface filter;
+    Map<String, Double> filteredWifiRSSI;
 
     public RSSIService() {
         super("MyIntentService");
-        previousValues = new LinkedList<Map<String, Double>>();
+        previousValues = new LinkedList<>();
         filter = new StaticTimeWindowFilter(MEMSIZE, THRESHOLD);
-
     }
     @Override
     protected void onHandleIntent(Intent workIntent) {
-
-
+        // Initiates the WiFi service.
         WifiManager wifi = (WifiManager) getSystemService(Context.WIFI_SERVICE);
+        try {
+            while (true) {
+                //Scans for devices and saves them into the results list.
+                wifi.startScan();
 
-        while (true) {
-            wifi.startScan();
-            List<ScanResult> results = wifi.getScanResults();
-            int size = results.size();
-            size = size - 1;
-            Map<String, Double> currentWifiRSSI = new HashMap<String, Double>();
-            for (ScanResult scanResult : results) {
-                currentWifiRSSI.put(scanResult.SSID, Double.valueOf(scanResult.level));
+                List<ScanResult> results = wifi.getScanResults();
+
+                Map<String, Double> currentWifiRSSI = new HashMap<>();
+                for (ScanResult scanResult : results) {
+                    currentWifiRSSI.put(scanResult.SSID, (double) scanResult.level);
+                }
+                //Filtering module
+                if (FILTER_SWITCH) {
+                    previousValues.push(currentWifiRSSI);
+                    filteredWifiRSSI = filter.filteringmethod(previousValues);
+                    if (previousValues.size() > MAX_MEMORY_SIZE) {
+                        previousValues.pop();
+                    }
+                } else {
+                    filteredWifiRSSI = currentWifiRSSI;
+                }
+                Intent localIntent = new Intent(Constants.BROADCAST_ACTION);
+                localIntent.putExtra(Constants.EXTENDED_DATA_STATUS, new HashMap<>(filteredWifiRSSI));
+                LocalBroadcastManager.getInstance(this).sendBroadcast(localIntent);
+                // Broadcasting
+                int interval = 1000;
+                SystemClock.sleep(interval);
             }
-            Map<String, Double> filteredWifiRSSI;
-            previousValues.push(currentWifiRSSI);
-            filteredWifiRSSI = filter.filteringmethod(previousValues);
-            if (previousValues.size() > MAX_MEMORY_SIZE) {
-                previousValues.pop();
+        } catch (Exception e) {
+            e.printStackTrace();
             }
-            Intent localIntent = new Intent(Constants.BROADCAST_ACTION);
-            localIntent.putExtra(Constants.EXTENDED_DATA_STATUS, new HashMap<String, Double>(filteredWifiRSSI));
-            LocalBroadcastManager.getInstance(this).sendBroadcast(localIntent);
-            // Broadcasting
-            int interval = 12000;
-            SystemClock.sleep(interval);
-        }
     }
 }

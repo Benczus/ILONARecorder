@@ -7,7 +7,7 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 
-
+//Implementation of the Horus filter
 public class HorusFilter implements FilterInterface {
 
     private int memsize;
@@ -17,6 +17,7 @@ public class HorusFilter implements FilterInterface {
         this.memsize = memsize;
     }
 
+    //Main filtering method
 
     @Override
     public Map<String, Double> filteringmethod(LinkedList<Map<String, Double>> linkedList) {

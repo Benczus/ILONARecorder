@@ -6,7 +6,7 @@ import java.util.ArrayList;
  * Created by ilona on 2016.08.11..
  */
 
-
+//Class to calculate
 public class Statistics {
     ArrayList<Double> data;
     int size;

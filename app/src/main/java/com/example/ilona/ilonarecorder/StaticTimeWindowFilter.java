@@ -10,6 +10,7 @@ import java.util.Set;
 /**
  * Created by ilona on 2016.08.09..
  */
+//Implementation of the Static Time Windowing Filter.
 public class StaticTimeWindowFilter implements FilterInterface {
     private double threshold;
     private int memsize;
@@ -20,7 +21,8 @@ public class StaticTimeWindowFilter implements FilterInterface {
         this.memsize = memsize;
     }
 
-    //TODO TESZTELNI
+    //Main filtering method
+
     @Override
     public Map<String, Double> filteringmethod(LinkedList<Map<String, Double>> linkedList) {
         if (linkedList.size() < memsize) {
