@@ -23,22 +23,24 @@ public class DynamicTimeWindowFilter implements FilterInterface {
         if (linkedList.size() < memsize) {
             return linkedList.getFirst();
         }
-
+        double filteredValue;
         Map<String, Double> result = new HashMap<String, Double>();
-
+        ArrayList<Double> rssiValues = null;
         for (String ssid : getKeys(linkedList)) {
-            ArrayList<Double> rssiValues = getWiFiRSSIVector(ssid, linkedList);
-            double filteredValue = rssiValues.get(0);
-            if (rssiValues.size() > 1) {
-                double difference = rssiValues.get(0) - rssiValues.get(1);
-                if ((difference > threshold)) {
-                    filteredValue = filter(rssiValues);
+            rssiValues = getWiFiRSSIVector(ssid, linkedList);
+            if (rssiValues.size() > 0) {
+                filteredValue = rssiValues.get(0);
+                if (rssiValues.size() > 1) {
+                    double difference = rssiValues.get(0) - rssiValues.get(1);
+                    if ((difference > threshold)) {
+                        filteredValue = filter(rssiValues);
+                    }
                 }
+                result.put(ssid, filteredValue);
             }
-            result.put(ssid, filteredValue);
 
         }
-
+        threshold = new Statistics(rssiValues).getStdDev();
         return result;
     }
 

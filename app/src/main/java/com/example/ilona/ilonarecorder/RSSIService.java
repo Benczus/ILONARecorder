@@ -44,8 +44,9 @@ public class RSSIService extends IntentService {
             for (ScanResult scanResult : results) {
                 currentWifiRSSI.put(scanResult.SSID, Double.valueOf(scanResult.level));
             }
+            Map<String, Double> filteredWifiRSSI;
             previousValues.push(currentWifiRSSI);
-            Map<String, Double> filteredWifiRSSI = filter.filteringmethod(previousValues);
+            filteredWifiRSSI = filter.filteringmethod(previousValues);
             if (previousValues.size() > MAX_MEMORY_SIZE) {
                 previousValues.pop();
             }
