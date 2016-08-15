@@ -7,4 +7,8 @@
     <string name="magneto_xaxis">X axis</string>
     <string name="getvalues">Get Sensor Values</string>
     <string name="sendresults">Send Results</string>
+    <string name="get_position">Get Position</string>
+    <string name="UID">User name</string>
+    <string name="PASS">Password</string>
+    <string name="sendToTracking">Send to tracking</string>
 </resources>

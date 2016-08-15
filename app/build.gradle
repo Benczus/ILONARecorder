@@ -35,4 +35,6 @@ dependencies {
     compile 'uni.miskolc.ips.ilona:measurement-model:0.1.1-SNAPSHOT'
     compile 'com.fasterxml.jackson.core:jackson-core:2.8.1'
     compile 'com.fasterxml.jackson.core:jackson-databind:2.8.1'
+    compile group: 'commons-codec', name: 'commons-codec', version: '1.9'
+
 }

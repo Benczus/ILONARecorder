@@ -237,6 +237,23 @@ public class IlonaActivity extends AppCompatActivity implements SensorEventListe
         toast.show();
     }
 
+    public void sendToTracking(View view) throws ExecutionException, InterruptedException {
+        // TODO
+        String authInfo = null;
+        String text;
+        if (measurement != null) {
+            IlonaTrackingConnection conn = new IlonaTrackingConnection(measurement, authInfo);
+            text = conn.execute(measurement.toString()).get();
+        } else {
+            // if the measurement hasn't been initialized yet.
+            text = "Please get measurements first!";
+        }
+        Context context = getApplicationContext();
+        int duration = Toast.LENGTH_SHORT;
+        Toast toast = Toast.makeText(context, text, duration);
+        toast.show();
+    }
+
 
     // Magnetometer API method that refreshes the values when they change
     @Override
@@ -270,13 +287,9 @@ public class IlonaActivity extends AppCompatActivity implements SensorEventListe
         client.connect();
 
         Action viewAction = Action.newAction(
-                Action.TYPE_VIEW, // TODO: choose an action type.
-                "Main Page", // TODO: Define a title for the content shown.
-                // TODO: If you have web page content that matches this app activity's content,
-                // make sure this auto-generated web page URL is correct.
-                // Otherwise, set the URL to null.
+                Action.TYPE_VIEW,
+                "Main Page",
                 Uri.parse("http://host/path"),
-                // TODO: Make sure this auto-generated app URL is correct.
                 Uri.parse("android-app://com.example.ilona.ilonarecorder/http/host/path")
         );
 
