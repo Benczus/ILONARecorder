@@ -15,9 +15,9 @@ import java.net.URL;
 import uni.miskolc.ips.ilona.measurement.model.measurement.Measurement;
 
 
-public abstract class AbstractConnection extends AsyncTask<String, String, String> {
-    Measurement measurement;
-    String ServerURL;
+abstract class AbstractConnection extends AsyncTask<String, String, String> {
+    private Measurement measurement;
+    private String ServerURL;
 
     @Override
     protected String doInBackground(String... strings) {
@@ -53,8 +53,8 @@ public abstract class AbstractConnection extends AsyncTask<String, String, Strin
     // Sets the connection type
     private void setConnectionParameters(HttpURLConnection urlConnection) {
         String ConnectionType = "Content-Type";
-        String ConnectionPropety = "application/json;charset=UTF-8";
-        urlConnection.setRequestProperty(ConnectionType, ConnectionPropety);
+        String ConnectionProperty = "application/json;charset=UTF-8";
+        urlConnection.setRequestProperty(ConnectionType, ConnectionProperty);
         Log.d("Connection watch", urlConnection.toString());
     }
 

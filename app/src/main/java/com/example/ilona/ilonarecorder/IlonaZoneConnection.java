@@ -13,7 +13,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 
-public class IlonaZoneConnection extends AsyncTask<URL, Integer, String> {
+class IlonaZoneConnection extends AsyncTask<URL, Integer, String> {
 
     public IlonaZoneConnection() {
 
@@ -35,8 +35,8 @@ public class IlonaZoneConnection extends AsyncTask<URL, Integer, String> {
             urlConnection.setDoOutput(true);
             // Sets the connection type
             String ConnectionType = "Content-Type";
-            String ConnectionPropety = "application/json;charset=UTF-8";
-            urlConnection.setRequestProperty(ConnectionType, ConnectionPropety);
+            String ConnectionProperty = "application/json;charset=UTF-8";
+            urlConnection.setRequestProperty(ConnectionType, ConnectionProperty);
             // Connects to the server
             url.openConnection();
             OutputStream out = urlConnection.getOutputStream();
@@ -49,9 +49,9 @@ public class IlonaZoneConnection extends AsyncTask<URL, Integer, String> {
                 sb.append((char) ch);
             }
             // Returns the received data to the main activity
-            JSONArray zoneresult = new JSONArray(sb.toString());
+            JSONArray zoneResult = new JSONArray(sb.toString());
             out.close();
-            return zoneresult.toString();
+            return zoneResult.toString();
 
 
         } catch (IOException | JSONException e) {

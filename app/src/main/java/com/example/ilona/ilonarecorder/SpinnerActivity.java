@@ -1,5 +1,6 @@
 package com.example.ilona.ilonarecorder;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.graphics.Color;
 import android.net.Uri;
@@ -12,6 +13,7 @@ import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.common.api.GoogleApiClient;
 
+@SuppressLint("Registered")
 public class SpinnerActivity extends Activity implements AdapterView.OnItemSelectedListener {
     private GoogleApiClient client;
 
@@ -19,7 +21,6 @@ public class SpinnerActivity extends Activity implements AdapterView.OnItemSelec
     public void onItemSelected(AdapterView<?> parent, View view, int pos, long l) {
         ((TextView) parent.getChildAt(0)).setTextColor(Color.BLACK);
         ((TextView) parent.getChildAt(0)).setTextSize(5);
-        Object cucc = parent.getItemAtPosition(pos);
 
     }
 

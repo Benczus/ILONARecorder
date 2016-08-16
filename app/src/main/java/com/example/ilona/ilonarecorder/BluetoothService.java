@@ -15,9 +15,7 @@ import java.util.Set;
 
 public class BluetoothService extends IntentService {
 
-    BluetoothAdapter mBluetoothAdapter;
-    Set<BluetoothDevice> pairedDevices;
-    ArrayList<String> mArrayAdapter;
+    private ArrayList<String> mArrayAdapter;
     //The bluetooth API automatically send a ACTION_FOUND broadcast from the startDiscovery() method,
     //the receiver receives it, and ands the device name and address to the string array.
     private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
@@ -41,6 +39,9 @@ public class BluetoothService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
+
+        BluetoothAdapter mBluetoothAdapter;
+        Set<BluetoothDevice> pairedDevices;
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         pairedDevices = mBluetoothAdapter.getBondedDevices();
         mArrayAdapter = new ArrayList<>();
@@ -57,7 +58,7 @@ public class BluetoothService extends IntentService {
                 }
             }
 
-            // Discovers the bluetooth competible devices inside the range of the device.
+            // Discovers the bluetooth compatible devices inside the range of the device.
             mBluetoothAdapter.startDiscovery();
             // Bundles the string array of the devices into an intent and sends it to MainActivity.
             Intent localIntent = new Intent(Constants.BLUETOOTH_BROADCAST);

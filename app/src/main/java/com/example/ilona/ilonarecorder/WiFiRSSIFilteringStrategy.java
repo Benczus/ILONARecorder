@@ -5,8 +5,7 @@ import java.util.Map;
 
 
 interface WiFiRSSIFilteringStrategy {
-    int RSSIlevel = 0;
 
-    Map<String, Double> filteringmethod(LinkedList<Map<String, Double>> linkedList);
+    Map<String, Double> filteringMethod(LinkedList<Map<String, Double>> linkedList);
 
 }

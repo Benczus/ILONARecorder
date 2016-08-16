@@ -15,15 +15,15 @@ import uni.miskolc.ips.ilona.measurement.model.measurement.Measurement;
 
 
 public class IlonaPositionConnection extends AbstractConnection {
-    Measurement measurement;
-    String ServerURL;
+    private final Measurement measurement;
+    private final String ServerURL;
 
     public IlonaPositionConnection(Measurement measurement, String ServerURL) {
         this.measurement = measurement;
         this.ServerURL = ServerURL;
     }
 
-    // Asycronous task that uses a thread in the background to do the network operations,
+    // Asyncronous task that uses a thread in the background to do the network operations,
     // which makes the application more responsive.
     @Override
     protected String doInBackground(String... strings) {
@@ -54,8 +54,8 @@ public class IlonaPositionConnection extends AbstractConnection {
 
     private void setConnectionParameters(HttpURLConnection urlConnection) {
         String ConnectionType = "Content-Type";
-        String ConnectionPropety = "application/json;charset=UTF-8";
-        urlConnection.setRequestProperty(ConnectionType, ConnectionPropety);
+        String ConnectionProperty = "application/json;charset=UTF-8";
+        urlConnection.setRequestProperty(ConnectionType, ConnectionProperty);
         Log.d("Connection watch", urlConnection.toString());
     }
 

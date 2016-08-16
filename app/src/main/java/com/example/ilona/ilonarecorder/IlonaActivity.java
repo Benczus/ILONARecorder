@@ -39,7 +39,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
@@ -56,16 +55,16 @@ import uni.miskolc.ips.ilona.measurement.model.position.Zone;
 public class IlonaActivity extends AppCompatActivity implements SensorEventListener {
     // variable members
 
-    ResponseReceiver mDownloadStateReceiver = new ResponseReceiver();
-    ResponseReceiver mBlDownloadReceiver = new ResponseReceiver();
-    SensorManager mSensorManager;
-    Sensor mMagnetometer;
-    float[] magneto;
-    Measurement measurement;
-    Map<String, Double> rssivalue;
-    ArrayList<String> bluetootharray;
-    Zone[] zones = new Zone[0];
-    Spinner spinner;
+    private final ResponseReceiver mDownloadStateReceiver = new ResponseReceiver();
+    private final ResponseReceiver mBlDownloadReceiver = new ResponseReceiver();
+    private SensorManager mSensorManager;
+    private Sensor mMagnetometer;
+    private float[] magneto;
+    private Measurement measurement;
+    private Map<String, Double> rssivalue;
+    private ArrayList<String> bluetootharray;
+    private Zone[] zones = new Zone[0];
+    private Spinner spinner;
     private GoogleApiClient client;
 
     @Override
@@ -77,7 +76,6 @@ public class IlonaActivity extends AppCompatActivity implements SensorEventListe
 
         //Initializes the magnetometer.
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-        List<Sensor> deviceSensors = mSensorManager.getSensorList(Sensor.TYPE_ALL);
         mMagnetometer = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
 
         //Starts the WiFi collection service.
@@ -93,7 +91,7 @@ public class IlonaActivity extends AppCompatActivity implements SensorEventListe
         mStatusIntentFilter = new IntentFilter(
                 Constants.BROADCAST_ACTION);
 
-        // Insterts the appropriate code to catch broadcasts.
+        // Inserts the appropriate code to catch broadcasts.
         LocalBroadcastManager.getInstance(this).registerReceiver(
                 mDownloadStateReceiver,
                 mStatusIntentFilter);
@@ -176,7 +174,7 @@ public class IlonaActivity extends AppCompatActivity implements SensorEventListe
         int duration = Toast.LENGTH_SHORT;
         Context context = getApplicationContext();
         Magnetometer magnetometer = new Magnetometer();
-        MeasurementBuilder measBukilder = new MeasurementBuilder();
+        MeasurementBuilder measurementBuilder = new MeasurementBuilder();
         if (magneto != null) {
             double lenght = Math.sqrt((magneto[0] * magneto[0]) + (magneto[1] * magneto[1]) + (magneto[2] * magneto[2]));
             magneto[0] = (float) (magneto[0] / lenght);
@@ -188,17 +186,17 @@ public class IlonaActivity extends AppCompatActivity implements SensorEventListe
         //Getting the WifiRSSI and bluetooth values from the services.
         if (rssivalue != null) {
             WiFiRSSI rssi = new WiFiRSSI(rssivalue);
-            measBukilder.setWifiRSSI(rssi);
+            measurementBuilder.setWifiRSSI(rssi);
         }
 
         if (bluetootharray != null) {
             BluetoothTags tags = new BluetoothTags(new HashSet<>(bluetootharray));
-            measBukilder.setbluetoothTags(tags);
+            measurementBuilder.setbluetoothTags(tags);
 
         }
 
-        measBukilder.setMagnetometer(magnetometer);
-        // Gettomg the zone and the coordinates to build the measurement
+        measurementBuilder.setMagnetometer(magnetometer);
+        // Get the zone and the coordinates to build the measurement
         Zone zone = (Zone) spinner.getSelectedItem();
         EditText editText1 = (EditText) findViewById(R.id.edit_coord1);
         Double coord1 = Double.parseDouble(editText1.getText().toString());
@@ -208,9 +206,9 @@ public class IlonaActivity extends AppCompatActivity implements SensorEventListe
         Double coord3 = Double.parseDouble(editText3.getText().toString());
         Coordinate coordinates = new Coordinate(coord1, coord2, coord3);
         Position position = new Position(coordinates, zone);
-        measBukilder.setPosition(position);
+        measurementBuilder.setPosition(position);
         //Building measurement
-        measurement = measBukilder.build();
+        measurement = measurementBuilder.build();
         Log.d("alma", measurement.toString());
         //measurement.setId(UUID.randomUUID());
         String text = measurement.toString();
@@ -240,10 +238,10 @@ public class IlonaActivity extends AppCompatActivity implements SensorEventListe
     public void sendToTracking(View view) throws ExecutionException, InterruptedException {
         // TODO
         EditText editText1 = (EditText) findViewById(R.id.username);
-        String uname = editText1.getText().toString();
+        String username = editText1.getText().toString();
         EditText editText2 = (EditText) findViewById(R.id.passwd);
         String pass = editText2.getText().toString();
-        String authInfo = uname + ":" + pass;
+        String authInfo = username + ":" + pass;
         String text;
         if (measurement != null) {
             String ServerURL = "http://grabowski.iit.uni-miskolc.hu:8080/ilona/tracking/mobile/proba";

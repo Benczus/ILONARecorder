@@ -14,11 +14,10 @@ import java.net.URL;
 
 import uni.miskolc.ips.ilona.measurement.model.measurement.Measurement;
 
-
-public class IlonaTrackingConnection extends AsyncTask<String, String, String> {
+class IlonaTrackingConnection extends AsyncTask<String, String, String> {
     private final String authInfo;
-    Measurement measurement;
-    String ServerURL;
+    private final Measurement measurement;
+    private final String ServerURL;
 
     public IlonaTrackingConnection(uni.miskolc.ips.ilona.measurement.model.measurement.Measurement measurement, String ServerURL, String authInfo) {
         this.measurement = measurement;
@@ -26,7 +25,7 @@ public class IlonaTrackingConnection extends AsyncTask<String, String, String> {
         this.ServerURL = ServerURL;
     }
 
-    // Asycronous task that uses a thread in the background to do the network operations,
+    // Asyncronous task that uses a thread in the background to do the network operations,
     // which makes the application more responsive.
     @Override
     protected String doInBackground(String... strings) {
@@ -62,8 +61,8 @@ public class IlonaTrackingConnection extends AsyncTask<String, String, String> {
 
     private void setConnectionParameters(HttpURLConnection urlConnection) {
         String ConnectionType = "Content-Type";
-        String ConnectionPropety = "application/json;charset=UTF-8";
-        urlConnection.setRequestProperty(ConnectionType, ConnectionPropety);
+        String ConnectionProperty = "application/json;charset=UTF-8";
+        urlConnection.setRequestProperty(ConnectionType, ConnectionProperty);
         Log.d("Connection watch", urlConnection.toString());
     }
 

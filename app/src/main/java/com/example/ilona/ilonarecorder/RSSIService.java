@@ -18,15 +18,15 @@ import java.util.Map;
 public class RSSIService extends IntentService {
 
     // switch for filtering
-    final static boolean FILTER_SWITCH = false;
+    final private static boolean FILTER_SWITCH = false;
 
 
-    final static int MEMSIZE = 5;
-    final static int THRESHOLD = 5;
-    public static int MAX_MEMORY_SIZE = 20;
-    LinkedList<Map<String, Double>> previousValues;
-    WiFiRSSIFilteringStrategy filter;
-    Map<String, Double> filteredWifiRSSI;
+    final private static int MEMSIZE = 5;
+    final private static int THRESHOLD = 5;
+    final private static int MAX_MEMORY_SIZE = 20;
+    private final LinkedList<Map<String, Double>> previousValues;
+    private final WiFiRSSIFilteringStrategy filter;
+
 
     public RSSIService() {
         super("MyIntentService");
@@ -37,6 +37,7 @@ public class RSSIService extends IntentService {
     @Override
     protected void onHandleIntent(Intent workIntent) {
         // Initiates the WiFi service.
+        Map<String, Double> filteredWifiRSSI;
         WifiManager wifi = (WifiManager) getSystemService(Context.WIFI_SERVICE);
         try {
             while (true) {
@@ -52,7 +53,7 @@ public class RSSIService extends IntentService {
                 //Filtering module
                 if (FILTER_SWITCH) {
                     previousValues.push(currentWifiRSSI);
-                    filteredWifiRSSI = filter.filteringmethod(previousValues);
+                    filteredWifiRSSI = filter.filteringMethod(previousValues);
                     if (previousValues.size() > MAX_MEMORY_SIZE) {
                         previousValues.pop();
                     }

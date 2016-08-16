@@ -10,8 +10,8 @@ import java.util.Set;
 
 //Implementation of the Static Time Windowing Filter.
 public class StaticTimeWindowFilter implements WiFiRSSIFilteringStrategy {
-    private double threshold;
-    private int memsize;
+    private final double threshold;
+    private final int memsize;
 
 
     public StaticTimeWindowFilter(int memsize, double threshold) {
@@ -22,7 +22,7 @@ public class StaticTimeWindowFilter implements WiFiRSSIFilteringStrategy {
     //Main filtering method
 
     @Override
-    public Map<String, Double> filteringmethod(LinkedList<Map<String, Double>> linkedList) {
+    public Map<String, Double> filteringMethod(LinkedList<Map<String, Double>> linkedList) {
         if (linkedList.size() < memsize) {
             return linkedList.getFirst();
         }

@@ -32,7 +32,7 @@ public class HorusFilterTest {
         measurements.push(meas1);
 
         Map<String, Double> expected = meas1;
-        Map<String, Double> actual = filter.filteringmethod(measurements);
+        Map<String, Double> actual = filter.filteringMethod(measurements);
 
         assertEquals(expected, actual);
     }
@@ -55,7 +55,7 @@ public class HorusFilterTest {
         measurements.push(meas2);
 
         Map<String, Double> expected = meas2;
-        Map<String, Double> actual = filter.filteringmethod(measurements);
+        Map<String, Double> actual = filter.filteringMethod(measurements);
 
         assertEquals(expected, actual);
     }
@@ -89,7 +89,7 @@ public class HorusFilterTest {
         expected.put("AP2", (double) -41);
         expected.put("AP3", (double) -61);
 
-        Map<String, Double> actual = filter.filteringmethod(measurements);
+        Map<String, Double> actual = filter.filteringMethod(measurements);
 
 //        System.out.println("Expected ==> "+ expected);
 //        System.out.println("Actual ====> "+actual);
@@ -132,7 +132,7 @@ public class HorusFilterTest {
         expected.put("AP2", (double) -42);
         expected.put("AP3", (double) -62);
 
-        Map<String, Double> actual = filter.filteringmethod(measurements);
+        Map<String, Double> actual = filter.filteringMethod(measurements);
         assertEquals(expected, actual);
     }
 
@@ -164,7 +164,7 @@ public class HorusFilterTest {
 //        expected.put("AP2", Double.valueOf(-41));
         expected.put("AP3", -61.5);
 
-        Map<String, Double> actual = filter.filteringmethod(measurements);
+        Map<String, Double> actual = filter.filteringMethod(measurements);
 
 
         assertEquals(expected, actual);

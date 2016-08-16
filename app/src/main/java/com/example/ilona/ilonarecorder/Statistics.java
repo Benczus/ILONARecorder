@@ -2,14 +2,10 @@ package com.example.ilona.ilonarecorder;
 
 import java.util.ArrayList;
 
-/**
- * Created by ilona on 2016.08.11..
- */
-
 //Class to calculate
-public class Statistics {
-    ArrayList<Double> data;
-    int size;
+class Statistics {
+    private final ArrayList<Double> data;
+    private final int size;
 
     public Statistics(ArrayList<Double> data) {
         this.data = data;

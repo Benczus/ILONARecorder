@@ -10,7 +10,7 @@ import java.util.Set;
 //Implementation of the Horus filter
 public class HorusFilter implements WiFiRSSIFilteringStrategy {
 
-    private int memsize;
+    private final int memsize;
 
 
     public HorusFilter(int memsize) {
@@ -20,7 +20,7 @@ public class HorusFilter implements WiFiRSSIFilteringStrategy {
     //Main filtering method
 
     @Override
-    public Map<String, Double> filteringmethod(LinkedList<Map<String, Double>> linkedList) {
+    public Map<String, Double> filteringMethod(LinkedList<Map<String, Double>> linkedList) {
         if (linkedList.size() < memsize) {
             return linkedList.getFirst();
         }

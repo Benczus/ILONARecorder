@@ -15,8 +15,8 @@ import uni.miskolc.ips.ilona.measurement.model.measurement.Measurement;
 
 
 public class IlonaConnection extends AbstractConnection {
-    Measurement measurement;
-    String ServerURL;
+    private final Measurement measurement;
+    private final String ServerURL;
 
     public IlonaConnection(Measurement measurement, String ServerURL) {
         this.ServerURL = ServerURL;
@@ -53,8 +53,8 @@ public class IlonaConnection extends AbstractConnection {
     // Sets the connection type
     private void setConnectionParameters(HttpURLConnection urlConnection) {
         String ConnectionType = "Content-Type";
-        String ConnectionPropety = "application/json;charset=UTF-8";
-        urlConnection.setRequestProperty(ConnectionType, ConnectionPropety);
+        String ConnectionProperty = "application/json;charset=UTF-8";
+        urlConnection.setRequestProperty(ConnectionType, ConnectionProperty);
         Log.d("Connection watch", urlConnection.toString());
     }
 

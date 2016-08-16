@@ -10,8 +10,8 @@ import java.util.Set;
 
 //Implementation of the Dynamic Time Windowing Filter.
 public class DynamicTimeWindowFilter implements WiFiRSSIFilteringStrategy {
+    private final int memsize;
     private double threshold;
-    private int memsize;
 
     public DynamicTimeWindowFilter(int memsize, double threshold) {
         this.threshold = threshold;
@@ -22,7 +22,7 @@ public class DynamicTimeWindowFilter implements WiFiRSSIFilteringStrategy {
     //Main filtering method
 
     @Override
-    public Map<String, Double> filteringmethod(LinkedList<Map<String, Double>> linkedList) {
+    public Map<String, Double> filteringMethod(LinkedList<Map<String, Double>> linkedList) {
         if (linkedList.size() < memsize) {
             return linkedList.getFirst();
         }
