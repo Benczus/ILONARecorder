@@ -1,4 +1,4 @@
-package com.example.ilona.ilonarecorder;
+package com.example.ilona.ilonarecorder.connections;
 
 import android.os.AsyncTask;
 import android.util.Log;
@@ -14,7 +14,7 @@ import java.net.URL;
 
 import uni.miskolc.ips.ilona.measurement.model.measurement.Measurement;
 
-class IlonaTrackingConnection extends AsyncTask<String, String, String> {
+public class IlonaTrackingConnection extends AsyncTask<String, String, String> {
     private final String authInfo;
     private final Measurement measurement;
     private final String ServerURL;

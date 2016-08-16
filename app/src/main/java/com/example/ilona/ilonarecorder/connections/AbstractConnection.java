@@ -1,5 +1,6 @@
-package com.example.ilona.ilonarecorder;
+package com.example.ilona.ilonarecorder.connections;
 
+import android.os.AsyncTask;
 import android.util.Log;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -14,30 +15,27 @@ import java.net.URL;
 import uni.miskolc.ips.ilona.measurement.model.measurement.Measurement;
 
 
-public class IlonaPositionConnection extends AbstractConnection {
-    private final Measurement measurement;
-    private final String ServerURL;
+abstract class AbstractConnection extends AsyncTask<String, String, String> {
+    private Measurement measurement;
+    private String ServerURL;
 
-    public IlonaPositionConnection(Measurement measurement, String ServerURL) {
-        this.measurement = measurement;
-        this.ServerURL = ServerURL;
-    }
-
-    // Asyncronous task that uses a thread in the background to do the network operations,
-    // which makes the application more responsive.
     @Override
     protected String doInBackground(String... strings) {
+
         try {
+            // Connects to the server which is contained in the ServerURL variable
             HttpURLConnection urlConnection = connectToURL(ServerURL);
+            // Connects to the server
+            urlConnection.connect();
             setConnectionParameters(urlConnection);
             OutputStream out = sendJsonToServer(urlConnection);
             String zoneResult = receiveDataFromServer(urlConnection);
+            // Returns the received data to the main activity
             out.close();
             return zoneResult;
         } catch (IOException e) {
             e.printStackTrace();
         }
-
         return "false";
     }
 
@@ -52,6 +50,7 @@ public class IlonaPositionConnection extends AbstractConnection {
         return urlConnection;
     }
 
+    // Sets the connection type
     private void setConnectionParameters(HttpURLConnection urlConnection) {
         String ConnectionType = "Content-Type";
         String ConnectionProperty = "application/json;charset=UTF-8";
@@ -60,11 +59,13 @@ public class IlonaPositionConnection extends AbstractConnection {
     }
 
     private OutputStream sendJsonToServer(HttpURLConnection urlConnection) throws IOException {
-        OutputStream out = urlConnection.getOutputStream();
+        OutputStream out;
+        out = urlConnection.getOutputStream();
         // Json object writer creates a standardized JSON output from the measurement.
         ObjectWriter objectMapper = new ObjectMapper().writer().withDefaultPrettyPrinter();
         String json = objectMapper.writeValueAsString(measurement);
         Log.d("JSON output", json);
+
         // Sends the measurement to the server
         out.write(json.getBytes());
         out.flush();
@@ -72,6 +73,7 @@ public class IlonaPositionConnection extends AbstractConnection {
     }
 
     private String receiveDataFromServer(HttpURLConnection urlConnection) throws IOException {
+        //Receives the data sent by the server
         InputStream is = urlConnection.getInputStream();
         //Turns it into a readable string byte-by-byte
         int ch;

@@ -1,4 +1,4 @@
-package com.example.ilona.ilonarecorder;
+package com.example.ilona.ilonarecorder.filter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -7,16 +7,14 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 
+//Implementation of the Horus filter
+public class HorusFilter implements WiFiRSSIFilteringStrategy {
 
-//Implementation of the Dynamic Time Windowing Filter.
-public class DynamicTimeWindowFilter implements WiFiRSSIFilteringStrategy {
     private final int memsize;
-    private double threshold;
 
-    public DynamicTimeWindowFilter(int memsize, double threshold) {
-        this.threshold = threshold;
+
+    public HorusFilter(int memsize) {
         this.memsize = memsize;
-
     }
 
     //Main filtering method
@@ -26,24 +24,12 @@ public class DynamicTimeWindowFilter implements WiFiRSSIFilteringStrategy {
         if (linkedList.size() < memsize) {
             return linkedList.getFirst();
         }
-        double filteredValue;
         Map<String, Double> result = new HashMap<>();
-        ArrayList<Double> rssiValues = null;
         for (String ssid : getKeys(linkedList)) {
-            rssiValues = getWiFiRSSIVector(ssid, linkedList);
-            if (rssiValues.size() > 0) {
-                filteredValue = rssiValues.get(0);
-                if (rssiValues.size() > 1) {
-                    double difference = rssiValues.get(0) - rssiValues.get(1);
-                    if ((difference > threshold)) {
-                        filteredValue = filter(rssiValues);
-                    }
-                }
-                result.put(ssid, filteredValue);
-            }
-
+            ArrayList<Double> rssiValues = getWiFiRSSIVector(ssid, linkedList);
+            double filteredValue = filter(rssiValues);
+            result.put(ssid, filteredValue);
         }
-        threshold = new Statistics(rssiValues).getStdDev();
         return result;
     }
 
@@ -72,4 +58,6 @@ public class DynamicTimeWindowFilter implements WiFiRSSIFilteringStrategy {
         }
         return sum / m.size();
     }
+
 }
+

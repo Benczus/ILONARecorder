@@ -1,4 +1,4 @@
-package com.example.ilona.ilonarecorder;
+package com.example.ilona.ilonarecorder.filter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -7,13 +7,15 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 
-//Implementation of the Horus filter
-public class HorusFilter implements WiFiRSSIFilteringStrategy {
 
+//Implementation of the Static Time Windowing Filter.
+public class StaticTimeWindowFilter implements WiFiRSSIFilteringStrategy {
+    private final double threshold;
     private final int memsize;
 
 
-    public HorusFilter(int memsize) {
+    public StaticTimeWindowFilter(int memsize, double threshold) {
+        this.threshold = threshold;
         this.memsize = memsize;
     }
 
@@ -24,11 +26,22 @@ public class HorusFilter implements WiFiRSSIFilteringStrategy {
         if (linkedList.size() < memsize) {
             return linkedList.getFirst();
         }
+        double filteredValue;
         Map<String, Double> result = new HashMap<>();
+        ArrayList<Double> rssiValues;
         for (String ssid : getKeys(linkedList)) {
-            ArrayList<Double> rssiValues = getWiFiRSSIVector(ssid, linkedList);
-            double filteredValue = filter(rssiValues);
-            result.put(ssid, filteredValue);
+            rssiValues = getWiFiRSSIVector(ssid, linkedList);
+            if (rssiValues.size() > 0) {
+                filteredValue = rssiValues.get(0);
+                if (rssiValues.size() > 1) {
+                    double difference = rssiValues.get(0) - rssiValues.get(1);
+                    if ((difference > threshold)) {
+                        filteredValue = filter(rssiValues);
+                    }
+                }
+                result.put(ssid, filteredValue);
+            }
+
         }
         return result;
     }
@@ -58,6 +71,4 @@ public class HorusFilter implements WiFiRSSIFilteringStrategy {
         }
         return sum / m.size();
     }
-
 }
-

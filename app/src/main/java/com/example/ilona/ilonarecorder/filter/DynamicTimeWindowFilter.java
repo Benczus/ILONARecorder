@@ -1,4 +1,6 @@
-package com.example.ilona.ilonarecorder;
+package com.example.ilona.ilonarecorder.filter;
+
+import com.example.ilona.ilonarecorder.Statistics;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -8,15 +10,15 @@ import java.util.Map;
 import java.util.Set;
 
 
-//Implementation of the Static Time Windowing Filter.
-public class StaticTimeWindowFilter implements WiFiRSSIFilteringStrategy {
-    private final double threshold;
+//Implementation of the Dynamic Time Windowing Filter.
+public class DynamicTimeWindowFilter implements WiFiRSSIFilteringStrategy {
     private final int memsize;
+    private double threshold;
 
-
-    public StaticTimeWindowFilter(int memsize, double threshold) {
+    public DynamicTimeWindowFilter(int memsize, double threshold) {
         this.threshold = threshold;
         this.memsize = memsize;
+
     }
 
     //Main filtering method
@@ -28,7 +30,7 @@ public class StaticTimeWindowFilter implements WiFiRSSIFilteringStrategy {
         }
         double filteredValue;
         Map<String, Double> result = new HashMap<>();
-        ArrayList<Double> rssiValues;
+        ArrayList<Double> rssiValues = null;
         for (String ssid : getKeys(linkedList)) {
             rssiValues = getWiFiRSSIVector(ssid, linkedList);
             if (rssiValues.size() > 0) {
@@ -43,6 +45,7 @@ public class StaticTimeWindowFilter implements WiFiRSSIFilteringStrategy {
             }
 
         }
+        threshold = new Statistics(rssiValues).getStdDev();
         return result;
     }
 

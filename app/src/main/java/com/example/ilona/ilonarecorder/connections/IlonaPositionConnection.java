@@ -1,4 +1,4 @@
-package com.example.ilona.ilonarecorder;
+package com.example.ilona.ilonarecorder.connections;
 
 import android.util.Log;
 
@@ -14,20 +14,21 @@ import java.net.URL;
 import uni.miskolc.ips.ilona.measurement.model.measurement.Measurement;
 
 
-public class IlonaConnection extends AbstractConnection {
+public class IlonaPositionConnection extends AbstractConnection {
     private final Measurement measurement;
     private final String ServerURL;
 
-    public IlonaConnection(Measurement measurement, String ServerURL) {
-        this.ServerURL = ServerURL;
+    public IlonaPositionConnection(Measurement measurement, String ServerURL) {
         this.measurement = measurement;
+        this.ServerURL = ServerURL;
     }
 
+    // Asyncronous task that uses a thread in the background to do the network operations,
+    // which makes the application more responsive.
     @Override
     protected String doInBackground(String... strings) {
         try {
             HttpURLConnection urlConnection = connectToURL(ServerURL);
-            urlConnection.connect();
             setConnectionParameters(urlConnection);
             OutputStream out = sendJsonToServer(urlConnection);
             String zoneResult = receiveDataFromServer(urlConnection);
@@ -36,6 +37,7 @@ public class IlonaConnection extends AbstractConnection {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
         return "false";
     }
 
@@ -50,7 +52,6 @@ public class IlonaConnection extends AbstractConnection {
         return urlConnection;
     }
 
-    // Sets the connection type
     private void setConnectionParameters(HttpURLConnection urlConnection) {
         String ConnectionType = "Content-Type";
         String ConnectionProperty = "application/json;charset=UTF-8";
@@ -59,13 +60,11 @@ public class IlonaConnection extends AbstractConnection {
     }
 
     private OutputStream sendJsonToServer(HttpURLConnection urlConnection) throws IOException {
-        OutputStream out;
-        out = urlConnection.getOutputStream();
+        OutputStream out = urlConnection.getOutputStream();
         // Json object writer creates a standardized JSON output from the measurement.
         ObjectWriter objectMapper = new ObjectMapper().writer().withDefaultPrettyPrinter();
         String json = objectMapper.writeValueAsString(measurement);
         Log.d("JSON output", json);
-
         // Sends the measurement to the server
         out.write(json.getBytes());
         out.flush();
@@ -73,7 +72,6 @@ public class IlonaConnection extends AbstractConnection {
     }
 
     private String receiveDataFromServer(HttpURLConnection urlConnection) throws IOException {
-        //Receives the data sent by the server
         InputStream is = urlConnection.getInputStream();
         //Turns it into a readable string byte-by-byte
         int ch;
@@ -84,4 +82,3 @@ public class IlonaConnection extends AbstractConnection {
         return sb.toString();
     }
 }
-

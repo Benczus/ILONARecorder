@@ -1,4 +1,4 @@
-package com.example.ilona.ilonarecorder;
+package com.example.ilona.ilonarecorder.connections;
 
 
 import android.os.AsyncTask;
@@ -13,7 +13,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 
-class IlonaZoneConnection extends AsyncTask<URL, Integer, String> {
+public class IlonaZoneConnection extends AsyncTask<URL, Integer, String> {
 
     public IlonaZoneConnection() {
 

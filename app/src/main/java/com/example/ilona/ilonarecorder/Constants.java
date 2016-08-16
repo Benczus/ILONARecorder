@@ -1,6 +1,6 @@
 package com.example.ilona.ilonarecorder;
 
-final class Constants {
+final public class Constants {
 
     // Defines a custom Intent action for WiFi
     public static final String BROADCAST_ACTION =

@@ -1,5 +1,8 @@
 package com.example.ilona.ilonarecorder;
 
+import com.example.ilona.ilonarecorder.filter.HorusFilter;
+import com.example.ilona.ilonarecorder.filter.WiFiRSSIFilteringStrategy;
+
 import org.junit.Before;
 import org.junit.Test;
 

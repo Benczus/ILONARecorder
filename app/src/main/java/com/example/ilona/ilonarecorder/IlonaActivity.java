@@ -28,6 +28,12 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.ilona.ilonarecorder.connections.IlonaConnection;
+import com.example.ilona.ilonarecorder.connections.IlonaPositionConnection;
+import com.example.ilona.ilonarecorder.connections.IlonaTrackingConnection;
+import com.example.ilona.ilonarecorder.connections.IlonaZoneConnection;
+import com.example.ilona.ilonarecorder.services.BluetoothService;
+import com.example.ilona.ilonarecorder.services.RSSIService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;

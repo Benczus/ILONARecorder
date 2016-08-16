@@ -1,4 +1,4 @@
-package com.example.ilona.ilonarecorder;
+package com.example.ilona.ilonarecorder.services;
 
 import android.app.IntentService;
 import android.bluetooth.BluetoothAdapter;
@@ -9,6 +9,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.SystemClock;
 import android.support.v4.content.LocalBroadcastManager;
+
+import com.example.ilona.ilonarecorder.Constants;
 
 import java.util.ArrayList;
 import java.util.Set;

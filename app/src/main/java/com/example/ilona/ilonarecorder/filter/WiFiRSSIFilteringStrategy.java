@@ -1,10 +1,10 @@
-package com.example.ilona.ilonarecorder;
+package com.example.ilona.ilonarecorder.filter;
 
 import java.util.LinkedList;
 import java.util.Map;
 
 
-interface WiFiRSSIFilteringStrategy {
+public interface WiFiRSSIFilteringStrategy {
 
     Map<String, Double> filteringMethod(LinkedList<Map<String, Double>> linkedList);
 

@@ -3,7 +3,7 @@ package com.example.ilona.ilonarecorder;
 import java.util.ArrayList;
 
 //Class to calculate
-class Statistics {
+public class Statistics {
     private final ArrayList<Double> data;
     private final int size;
 
@@ -12,14 +12,14 @@ class Statistics {
         size = data.size();
     }
 
-    double getMean() {
+    public double getMean() {
         double sum = 0.0;
         for (double a : data)
             sum += a;
         return sum / size;
     }
 
-    double getVariance() {
+    public double getVariance() {
         double mean = getMean();
         double temp = 0;
         for (double a : data)
@@ -27,7 +27,7 @@ class Statistics {
         return temp / size;
     }
 
-    double getStdDev() {
+    public double getStdDev() {
         return Math.sqrt(getVariance());
     }
 }

@@ -1,4 +1,4 @@
-package com.example.ilona.ilonarecorder;
+package com.example.ilona.ilonarecorder.services;
 
 
 import android.app.IntentService;
@@ -8,6 +8,10 @@ import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
 import android.os.SystemClock;
 import android.support.v4.content.LocalBroadcastManager;
+
+import com.example.ilona.ilonarecorder.Constants;
+import com.example.ilona.ilonarecorder.filter.StaticTimeWindowFilter;
+import com.example.ilona.ilonarecorder.filter.WiFiRSSIFilteringStrategy;
 
 import java.util.HashMap;
 import java.util.LinkedList;
