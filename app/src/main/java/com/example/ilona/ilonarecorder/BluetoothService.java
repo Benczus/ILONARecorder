@@ -41,17 +41,17 @@ public class BluetoothService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        mBluetoothAdapter= BluetoothAdapter.getDefaultAdapter();
-        pairedDevices= mBluetoothAdapter.getBondedDevices();
-        mArrayAdapter = new ArrayList<String>();
+        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        pairedDevices = mBluetoothAdapter.getBondedDevices();
+        mArrayAdapter = new ArrayList<>();
         IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
         registerReceiver(mReceiver, filter);
         while (true) {
 
             // Adds the previously detected devices to the string array of detected devices.
-            if (!pairedDevices.isEmpty()){
-                for (BluetoothDevice device:pairedDevices){
-                    if(!mArrayAdapter.contains(device.getName() + " " + device.getAddress())) {
+            if (!pairedDevices.isEmpty()) {
+                for (BluetoothDevice device : pairedDevices) {
+                    if (!mArrayAdapter.contains(device.getName() + " " + device.getAddress())) {
                         mArrayAdapter.add(device.getName() + " " + device.getAddress());
                     }
                 }
@@ -63,7 +63,7 @@ public class BluetoothService extends IntentService {
             Intent localIntent = new Intent(Constants.BLUETOOTH_BROADCAST);
             localIntent.putExtra(Constants.BLUETOOTH_DATA_STATUS, mArrayAdapter);
             LocalBroadcastManager.getInstance(this).sendBroadcast(localIntent);
-            int interval=12000;
+            int interval = 12000;
             SystemClock.sleep(interval);
         }
     }

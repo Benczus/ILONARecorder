@@ -29,10 +29,10 @@ public abstract class AbstractConnection extends AsyncTask<String, String, Strin
             urlConnection.connect();
             setConnectionParameters(urlConnection);
             OutputStream out = sendJsonToServer(urlConnection);
-            String zoneresult = receiveDataFromServer(urlConnection);
+            String zoneResult = receiveDataFromServer(urlConnection);
             // Returns the received data to the main activity
             out.close();
-            return zoneresult;
+            return zoneResult;
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -20,7 +20,7 @@ public class IlonaConnection extends AbstractConnection {
 
     public IlonaConnection(Measurement measurement, String ServerURL) {
         this.ServerURL = ServerURL;
-        this.measurement= measurement;
+        this.measurement = measurement;
     }
 
     @Override
@@ -30,9 +30,9 @@ public class IlonaConnection extends AbstractConnection {
             urlConnection.connect();
             setConnectionParameters(urlConnection);
             OutputStream out = sendJsonToServer(urlConnection);
-            String zoneresult = receiveDataFromServer(urlConnection);
+            String zoneResult = receiveDataFromServer(urlConnection);
             out.close();
-            return zoneresult;
+            return zoneResult;
         } catch (IOException e) {
             e.printStackTrace();
         }

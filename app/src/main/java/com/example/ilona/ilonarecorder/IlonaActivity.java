@@ -62,7 +62,7 @@ public class IlonaActivity extends AppCompatActivity implements SensorEventListe
     Sensor mMagnetometer;
     float[] magneto;
     Measurement measurement;
-    Map<String,Double> rssivalue;
+    Map<String, Double> rssivalue;
     ArrayList<String> bluetootharray;
     Zone[] zones = new Zone[0];
     Spinner spinner;
@@ -115,14 +115,12 @@ public class IlonaActivity extends AppCompatActivity implements SensorEventListe
         }
         try {
             text = conn.execute(url).get();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
+        } catch (ExecutionException | InterruptedException e) {
             e.printStackTrace();
         }
         ObjectMapper objectMapper = new ObjectMapper();
         try {
-            this.zones =objectMapper.readValue(text,Zone[].class);
+            this.zones = objectMapper.readValue(text, Zone[].class);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -157,7 +155,8 @@ public class IlonaActivity extends AppCompatActivity implements SensorEventListe
         String text;
         // Starts the method which connects to the server and sends the measurement.
         if (measurement != null) {
-            IlonaPositionConnection conn = new IlonaPositionConnection(measurement);
+            String ServerURL = "http://grabowski.iit.uni-miskolc.hu:8080/ilona/getLocation";
+            IlonaPositionConnection conn = new IlonaPositionConnection(measurement, ServerURL);
             text = conn.execute(measurement.toString()).get();
         } else {
             // if the measurement hasn't been initialized yet.
@@ -187,12 +186,12 @@ public class IlonaActivity extends AppCompatActivity implements SensorEventListe
         }
 
         //Getting the WifiRSSI and bluetooth values from the services.
-        if(rssivalue != null) {
+        if (rssivalue != null) {
             WiFiRSSI rssi = new WiFiRSSI(rssivalue);
             measBukilder.setWifiRSSI(rssi);
         }
 
-        if(bluetootharray != null) {
+        if (bluetootharray != null) {
             BluetoothTags tags = new BluetoothTags(new HashSet<>(bluetootharray));
             measBukilder.setbluetoothTags(tags);
 
@@ -200,19 +199,19 @@ public class IlonaActivity extends AppCompatActivity implements SensorEventListe
 
         measBukilder.setMagnetometer(magnetometer);
         // Gettomg the zone and the coordinates to build the measurement
-        Zone zone =(Zone) spinner.getSelectedItem();
-        EditText editText1=(EditText) findViewById(R.id.edit_coord1);
-        Double coord1= Double.parseDouble(editText1.getText().toString());
-        EditText editText2=(EditText) findViewById(R.id.edit_coord2);
-        Double coord2= Double.parseDouble(editText2.getText().toString());
-        EditText editText3=(EditText) findViewById(R.id.edit_coord3);
-        Double coord3=Double.parseDouble(editText3.getText().toString());
-        Coordinate coordinates=new Coordinate(coord1,coord2,coord3);
+        Zone zone = (Zone) spinner.getSelectedItem();
+        EditText editText1 = (EditText) findViewById(R.id.edit_coord1);
+        Double coord1 = Double.parseDouble(editText1.getText().toString());
+        EditText editText2 = (EditText) findViewById(R.id.edit_coord2);
+        Double coord2 = Double.parseDouble(editText2.getText().toString());
+        EditText editText3 = (EditText) findViewById(R.id.edit_coord3);
+        Double coord3 = Double.parseDouble(editText3.getText().toString());
+        Coordinate coordinates = new Coordinate(coord1, coord2, coord3);
         Position position = new Position(coordinates, zone);
         measBukilder.setPosition(position);
         //Building measurement
         measurement = measBukilder.build();
-        Log.d("alma",measurement.toString());
+        Log.d("alma", measurement.toString());
         //measurement.setId(UUID.randomUUID());
         String text = measurement.toString();
         Toast toast = Toast.makeText(context, text, duration);
@@ -224,12 +223,13 @@ public class IlonaActivity extends AppCompatActivity implements SensorEventListe
     public void sendToServer(View view) throws ExecutionException, InterruptedException {
         String text;
         // Starts the method which connects to the server and sends the measurement.
-        if (measurement!=null) {
-            IlonaConnection conn = new IlonaConnection(measurement);
+        if (measurement != null) {
+            String ServerURL = "http://grabowski.iit.uni-miskolc.hu:8080/ilona/recordMeasurement";
+            IlonaConnection conn = new IlonaConnection(measurement, ServerURL);
             text = conn.execute(measurement.toString()).get();
-        }else{
+        } else {
             // if the measurement hasn't been initialized yet.
-            text="Please get measurements first!";
+            text = "Please get measurements first!";
         }
         Context context = getApplicationContext();
         int duration = Toast.LENGTH_SHORT;
@@ -239,10 +239,15 @@ public class IlonaActivity extends AppCompatActivity implements SensorEventListe
 
     public void sendToTracking(View view) throws ExecutionException, InterruptedException {
         // TODO
-        String authInfo = null;
+        EditText editText1 = (EditText) findViewById(R.id.username);
+        String uname = editText1.getText().toString();
+        EditText editText2 = (EditText) findViewById(R.id.passwd);
+        String pass = editText2.getText().toString();
+        String authInfo = uname + ":" + pass;
         String text;
         if (measurement != null) {
-            IlonaTrackingConnection conn = new IlonaTrackingConnection(measurement, authInfo);
+            String ServerURL = "http://grabowski.iit.uni-miskolc.hu:8080/ilona/tracking/mobile/proba";
+            IlonaTrackingConnection conn = new IlonaTrackingConnection(measurement, ServerURL, authInfo);
             text = conn.execute(measurement.toString()).get();
         } else {
             // if the measurement hasn't been initialized yet.
@@ -281,7 +286,7 @@ public class IlonaActivity extends AppCompatActivity implements SensorEventListe
     @Override
     public void onStart() {
         super.onStart();
-        spinner= (Spinner) findViewById(R.id.zone_spinner);
+        spinner = (Spinner) findViewById(R.id.zone_spinner);
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         client.connect();
@@ -301,20 +306,24 @@ public class IlonaActivity extends AppCompatActivity implements SensorEventListe
         String text;
         BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if (!mBluetoothAdapter.isEnabled()) {
-            text="Bluetooth isn't enabled";
-        }else {text="Bluetooth is enabled";}
+            text = "Bluetooth isn't enabled";
+        } else {
+            text = "Bluetooth is enabled";
+        }
 
         ConnectivityManager connManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo mWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
 
         if (mWifi.isConnected()) {
-            text=text+" and WiFi is enabled";
-        }else {text=text+" and Wifi isn't enabled";}
+            text = text + " and WiFi is enabled";
+        } else {
+            text = text + " and Wifi isn't enabled";
+        }
 
         Toast toast = Toast.makeText(context, text, duration);
         toast.show();
         // Spinner adapter
-        ArrayAdapter<Zone> adapter = new ArrayAdapter<Zone>(this, android.R.layout.simple_spinner_item, zones){
+        ArrayAdapter<Zone> adapter = new ArrayAdapter<Zone>(this, android.R.layout.simple_spinner_item, zones) {
             @Override
             public View getView(int position, View convertView, ViewGroup parent) {
                 // Get the data item for this position
@@ -324,7 +333,7 @@ public class IlonaActivity extends AppCompatActivity implements SensorEventListe
                     convertView = LayoutInflater.from(getContext()).inflate(R.layout.support_simple_spinner_dropdown_item, parent, false);
                 }
 //                convertView.setTag(zone.getName());
-                ((TextView)convertView).setText(zone.getName());
+                ((TextView) convertView).setText(zone.getName());
                 // Return the completed view to render on screen
                 return convertView;
             }
@@ -333,11 +342,11 @@ public class IlonaActivity extends AppCompatActivity implements SensorEventListe
             public View getDropDownView(int position, View convertView, ViewGroup parent) {
                 View result = super.getDropDownView(position, convertView, parent);
                 Zone zone = getItem(position);
-                if(zone == null){
+                if (zone == null) {
                     return result;
                 }
-                ((TextView)result).setText(zone.getName());
-                return  result;
+                ((TextView) result).setText(zone.getName());
+                return result;
             }
         };
         spinner.setAdapter(adapter);
@@ -364,13 +373,14 @@ public class IlonaActivity extends AppCompatActivity implements SensorEventListe
         client.disconnect();
 
     }
+
     // Handles incoming broadcasts from MyIntentService and BluetoothService.
     class ResponseReceiver extends BroadcastReceiver {
 
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
             if (action == Constants.BROADCAST_ACTION) {
-                rssivalue = (HashMap<String, Double>)intent.getSerializableExtra(Constants.EXTENDED_DATA_STATUS);
+                rssivalue = (HashMap<String, Double>) intent.getSerializableExtra(Constants.EXTENDED_DATA_STATUS);
             } else if (action == Constants.BLUETOOTH_BROADCAST) {
                 bluetootharray = new ArrayList<>();
                 bluetootharray = intent.getStringArrayListExtra(Constants.BLUETOOTH_DATA_STATUS);

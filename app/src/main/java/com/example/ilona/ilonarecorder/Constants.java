@@ -11,7 +11,7 @@ final class Constants {
             "com.example.ilona.myapplication.STATUS";
 
     // Defines a custom Intent action for Bluetooth
-    public static final String  BLUETOOTH_BROADCAST=
+    public static final String BLUETOOTH_BROADCAST =
             "com.example.ilona.myapplication.BLUETOOTHBC";
 
     // Defines the key for the status "extra" in a Bluetooth Intent

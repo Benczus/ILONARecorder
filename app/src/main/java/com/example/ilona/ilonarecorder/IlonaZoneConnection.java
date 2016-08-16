@@ -13,19 +13,20 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 
-public class IlonaZoneConnection extends AsyncTask<URL, Integer ,String  >{
+public class IlonaZoneConnection extends AsyncTask<URL, Integer, String> {
 
     public IlonaZoneConnection() {
 
     }
+
     // Asycronous task that uses a thread in the background to do the network operations,
     // which makes the application more responsive.
     @Override
-    protected String doInBackground(URL... urls){
-        URL url =urls[0];
+    protected String doInBackground(URL... urls) {
+        URL url = urls[0];
         try {
             // Connects to the server which is contained in the ServerURL variable
-            HttpURLConnection urlConnection = null;
+            HttpURLConnection urlConnection;
             urlConnection = (HttpURLConnection) url.openConnection();
             urlConnection.setReadTimeout(15000);
             urlConnection.setConnectTimeout(15000);
@@ -33,29 +34,27 @@ public class IlonaZoneConnection extends AsyncTask<URL, Integer ,String  >{
             urlConnection.setDoInput(true);
             urlConnection.setDoOutput(true);
             // Sets the connection type
-            String ConnectionType="Content-Type";
-            String ConnectionPropety="application/json;charset=UTF-8";
-            urlConnection.setRequestProperty(ConnectionType,ConnectionPropety);
+            String ConnectionType = "Content-Type";
+            String ConnectionPropety = "application/json;charset=UTF-8";
+            urlConnection.setRequestProperty(ConnectionType, ConnectionPropety);
             // Connects to the server
             url.openConnection();
-            OutputStream out= urlConnection.getOutputStream();
+            OutputStream out = urlConnection.getOutputStream();
             //Receives the data sent by the server
-            InputStream is= urlConnection.getInputStream();
+            InputStream is = urlConnection.getInputStream();
             //Turns it into a readable string byte-by-byte
             int ch;
-            StringBuffer sb= new StringBuffer();
+            StringBuilder sb = new StringBuilder();
             while ((ch = is.read()) != -1) {
                 sb.append((char) ch);
             }
             // Returns the received data to the main activity
-            JSONArray zoneresult=new JSONArray(sb.toString());
+            JSONArray zoneresult = new JSONArray(sb.toString());
             out.close();
             return zoneresult.toString();
 
 
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (JSONException e) {
+        } catch (IOException | JSONException e) {
             e.printStackTrace();
         }
 
@@ -63,7 +62,6 @@ public class IlonaZoneConnection extends AsyncTask<URL, Integer ,String  >{
 
 
     }
-
 
 
 }

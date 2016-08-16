@@ -33,6 +33,7 @@ public class RSSIService extends IntentService {
         previousValues = new LinkedList<>();
         filter = new StaticTimeWindowFilter(MEMSIZE, THRESHOLD);
     }
+
     @Override
     protected void onHandleIntent(Intent workIntent) {
         // Initiates the WiFi service.
@@ -67,6 +68,6 @@ public class RSSIService extends IntentService {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            }
+        }
     }
 }
