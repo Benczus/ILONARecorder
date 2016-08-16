@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.Set;
 
 //Implementation of the Horus filter
-public class HorusFilter implements FilterInterface {
+public class HorusFilter implements WiFiRSSIFilteringStrategy {
 
     private int memsize;
 
@@ -24,7 +24,7 @@ public class HorusFilter implements FilterInterface {
         if (linkedList.size() < memsize) {
             return linkedList.getFirst();
         }
-        Map<String, Double> result = new HashMap<String, Double>();
+        Map<String, Double> result = new HashMap<>();
         for (String ssid : getKeys(linkedList)) {
             ArrayList<Double> rssiValues = getWiFiRSSIVector(ssid, linkedList);
             double filteredValue = filter(rssiValues);
@@ -34,7 +34,7 @@ public class HorusFilter implements FilterInterface {
     }
 
     private Set<String> getKeys(LinkedList<Map<String, Double>> linkedList) {
-        Set<String> result = new HashSet<String>();
+        Set<String> result = new HashSet<>();
         for (int i = 0; i < linkedList.size(); i++) {
             result.addAll(linkedList.get(i).keySet());
         }

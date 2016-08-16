@@ -9,7 +9,7 @@ import java.util.Set;
 
 
 //Implementation of the Dynamic Time Windowing Filter.
-public class DynamicTimeWindowFilter implements FilterInterface {
+public class DynamicTimeWindowFilter implements WiFiRSSIFilteringStrategy {
     private double threshold;
     private int memsize;
 
@@ -27,7 +27,7 @@ public class DynamicTimeWindowFilter implements FilterInterface {
             return linkedList.getFirst();
         }
         double filteredValue;
-        Map<String, Double> result = new HashMap<String, Double>();
+        Map<String, Double> result = new HashMap<>();
         ArrayList<Double> rssiValues = null;
         for (String ssid : getKeys(linkedList)) {
             rssiValues = getWiFiRSSIVector(ssid, linkedList);
@@ -48,7 +48,7 @@ public class DynamicTimeWindowFilter implements FilterInterface {
     }
 
     private Set<String> getKeys(LinkedList<Map<String, Double>> linkedList) {
-        Set<String> result = new HashSet<String>();
+        Set<String> result = new HashSet<>();
         for (int i = 0; i < linkedList.size(); i++) {
             result.addAll(linkedList.get(i).keySet());
         }

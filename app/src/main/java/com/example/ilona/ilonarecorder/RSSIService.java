@@ -25,7 +25,7 @@ public class RSSIService extends IntentService {
     final static int THRESHOLD = 5;
     public static int MAX_MEMORY_SIZE = 20;
     LinkedList<Map<String, Double>> previousValues;
-    FilterInterface filter;
+    WiFiRSSIFilteringStrategy filter;
     Map<String, Double> filteredWifiRSSI;
 
     public RSSIService() {

@@ -9,13 +9,11 @@ import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 
-/**
- * Created by ilona on 2016.08.11..
- */
+
 public class HorusFilterTest {
 
     private static final int MEMORY_SIZE = 3;
-    private FilterInterface filter;
+    private WiFiRSSIFilteringStrategy filter;
 
     @Before
     public void setUp() {
@@ -24,37 +22,34 @@ public class HorusFilterTest {
 
     @Test
     public void testWithOneMeasurement() {
-        LinkedList<Map<String, Double>> measurements = new LinkedList<Map<String, Double>>();
+        LinkedList<Map<String, Double>> measurements = new LinkedList<>();
 
-        Map<String, Double> meas1 = new HashMap<String, Double>();
-        meas1.put("AP1", Double.valueOf(-20));
-        meas1.put("AP2", Double.valueOf(-40));
-        meas1.put("AP3", Double.valueOf(-60));
+        Map<String, Double> meas1 = new HashMap<>();
+        meas1.put("AP1", (double) -20);
+        meas1.put("AP2", (double) -40);
+        meas1.put("AP3", (double) -60);
 
         measurements.push(meas1);
 
         Map<String, Double> expected = meas1;
         Map<String, Double> actual = filter.filteringmethod(measurements);
 
-//        System.out.println(expected);
-//        System.out.println(actual);
-
         assertEquals(expected, actual);
     }
 
     @Test
     public void testWithLessMeasurementsThanMemorySize() {
-        LinkedList<Map<String, Double>> measurements = new LinkedList<Map<String, Double>>();
+        LinkedList<Map<String, Double>> measurements = new LinkedList<>();
 
-        Map<String, Double> meas1 = new HashMap<String, Double>();
-        meas1.put("AP1", Double.valueOf(-20));
-        meas1.put("AP2", Double.valueOf(-40));
-        meas1.put("AP3", Double.valueOf(-60));
+        Map<String, Double> meas1 = new HashMap<>();
+        meas1.put("AP1", (double) -20);
+        meas1.put("AP2", (double) -40);
+        meas1.put("AP3", (double) -60);
 
-        Map<String, Double> meas2 = new HashMap<String, Double>();
-        meas2.put("AP1", Double.valueOf(-21));
-        meas2.put("AP2", Double.valueOf(-41));
-        meas2.put("AP3", Double.valueOf(-61));
+        Map<String, Double> meas2 = new HashMap<>();
+        meas2.put("AP1", (double) -21);
+        meas2.put("AP2", (double) -41);
+        meas2.put("AP3", (double) -61);
 
         measurements.push(meas1);
         measurements.push(meas2);
@@ -62,40 +57,37 @@ public class HorusFilterTest {
         Map<String, Double> expected = meas2;
         Map<String, Double> actual = filter.filteringmethod(measurements);
 
-//        System.out.println(expected);
-//        System.out.println(actual);
-
         assertEquals(expected, actual);
     }
 
     @Test
     public void testWhenMeasurementsCountEqualsMemorySize() {
-        LinkedList<Map<String, Double>> measurements = new LinkedList<Map<String, Double>>();
+        LinkedList<Map<String, Double>> measurements = new LinkedList<>();
 
-        Map<String, Double> meas1 = new HashMap<String, Double>();
-        meas1.put("AP1", Double.valueOf(-20));
-        meas1.put("AP2", Double.valueOf(-40));
-        meas1.put("AP3", Double.valueOf(-60));
+        Map<String, Double> meas1 = new HashMap<>();
+        meas1.put("AP1", (double) -20);
+        meas1.put("AP2", (double) -40);
+        meas1.put("AP3", (double) -60);
 
-        Map<String, Double> meas2 = new HashMap<String, Double>();
-        meas2.put("AP1", Double.valueOf(-21));
-        meas2.put("AP2", Double.valueOf(-41));
-        meas2.put("AP3", Double.valueOf(-61));
+        Map<String, Double> meas2 = new HashMap<>();
+        meas2.put("AP1", (double) -21);
+        meas2.put("AP2", (double) -41);
+        meas2.put("AP3", (double) -61);
 
-        Map<String, Double> meas3 = new HashMap<String, Double>();
-        meas3.put("AP1", Double.valueOf(-22));
-        meas3.put("AP2", Double.valueOf(-42));
-        meas3.put("AP3", Double.valueOf(-62));
+        Map<String, Double> meas3 = new HashMap<>();
+        meas3.put("AP1", (double) -22);
+        meas3.put("AP2", (double) -42);
+        meas3.put("AP3", (double) -62);
 
         measurements.push(meas1);
         measurements.push(meas2);
         measurements.push(meas3);
 
         //Calculated and set by us
-        Map<String, Double> expected = new HashMap<String, Double>();
-        expected.put("AP1", Double.valueOf(-21));
-        expected.put("AP2", Double.valueOf(-41));
-        expected.put("AP3", Double.valueOf(-61));
+        Map<String, Double> expected = new HashMap<>();
+        expected.put("AP1", (double) -21);
+        expected.put("AP2", (double) -41);
+        expected.put("AP3", (double) -61);
 
         Map<String, Double> actual = filter.filteringmethod(measurements);
 
@@ -107,27 +99,27 @@ public class HorusFilterTest {
 
     @Test
     public void testWithMoreMeasurementsThanMemorySize() {
-        LinkedList<Map<String, Double>> measurements = new LinkedList<Map<String, Double>>();
+        LinkedList<Map<String, Double>> measurements = new LinkedList<>();
 
-        Map<String, Double> meas1 = new HashMap<String, Double>();
-        meas1.put("AP1", Double.valueOf(-20));
-        meas1.put("AP2", Double.valueOf(-40));
-        meas1.put("AP3", Double.valueOf(-60));
+        Map<String, Double> meas1 = new HashMap<>();
+        meas1.put("AP1", (double) -20);
+        meas1.put("AP2", (double) -40);
+        meas1.put("AP3", (double) -60);
 
-        Map<String, Double> meas2 = new HashMap<String, Double>();
-        meas2.put("AP1", Double.valueOf(-21));
-        meas2.put("AP2", Double.valueOf(-41));
-        meas2.put("AP3", Double.valueOf(-61));
+        Map<String, Double> meas2 = new HashMap<>();
+        meas2.put("AP1", (double) -21);
+        meas2.put("AP2", (double) -41);
+        meas2.put("AP3", (double) -61);
 
-        Map<String, Double> meas3 = new HashMap<String, Double>();
-        meas3.put("AP1", Double.valueOf(-22));
-        meas3.put("AP2", Double.valueOf(-42));
-        meas3.put("AP3", Double.valueOf(-62));
+        Map<String, Double> meas3 = new HashMap<>();
+        meas3.put("AP1", (double) -22);
+        meas3.put("AP2", (double) -42);
+        meas3.put("AP3", (double) -62);
 
-        Map<String, Double> meas4 = new HashMap<String, Double>();
-        meas4.put("AP1", Double.valueOf(-23));
-        meas4.put("AP2", Double.valueOf(-43));
-        meas4.put("AP3", Double.valueOf(-63));
+        Map<String, Double> meas4 = new HashMap<>();
+        meas4.put("AP1", (double) -23);
+        meas4.put("AP2", (double) -43);
+        meas4.put("AP3", (double) -63);
 
         measurements.push(meas1);
         measurements.push(meas2);
@@ -135,46 +127,42 @@ public class HorusFilterTest {
         measurements.push(meas4);
 
         //Calculated and set by us
-        Map<String, Double> expected = new HashMap<String, Double>();
-        expected.put("AP1", Double.valueOf(-22));
-        expected.put("AP2", Double.valueOf(-42));
-        expected.put("AP3", Double.valueOf(-62));
+        Map<String, Double> expected = new HashMap<>();
+        expected.put("AP1", (double) -22);
+        expected.put("AP2", (double) -42);
+        expected.put("AP3", (double) -62);
 
         Map<String, Double> actual = filter.filteringmethod(measurements);
-
-//        System.out.println("Expected ==> "+ expected);
-//        System.out.println("Actual ====> "+actual);
-
         assertEquals(expected, actual);
     }
 
     @Test
     public void testWithMissingAPValues() {
-        LinkedList<Map<String, Double>> measurements = new LinkedList<Map<String, Double>>();
+        LinkedList<Map<String, Double>> measurements = new LinkedList<>();
 
-        Map<String, Double> meas1 = new HashMap<String, Double>();
+        Map<String, Double> meas1 = new HashMap<>();
 //        meas1.put("AP1", Double.valueOf(-20));
 //        meas1.put("AP2", Double.valueOf(-40));
 
-        Map<String, Double> meas2 = new HashMap<String, Double>();
+        Map<String, Double> meas2 = new HashMap<>();
 //        meas2.put("AP1", Double.valueOf(-21));
 //        meas2.put("AP2", Double.valueOf(-41));
-        meas2.put("AP3", Double.valueOf(-61));
+        meas2.put("AP3", (double) -61);
 
-        Map<String, Double> meas3 = new HashMap<String, Double>();
+        Map<String, Double> meas3 = new HashMap<>();
 //        meas3.put("AP1", Double.valueOf(-22));
 //        meas3.put("AP2", Double.valueOf(-42));
-        meas3.put("AP3", Double.valueOf(-62));
+        meas3.put("AP3", (double) -62);
 
         measurements.push(meas1);
         measurements.push(meas2);
         measurements.push(meas3);
 
         //Calculated and set by us
-        Map<String, Double> expected = new HashMap<String, Double>();
+        Map<String, Double> expected = new HashMap<>();
 //        expected.put("AP1", Double.valueOf(-21));
 //        expected.put("AP2", Double.valueOf(-41));
-        expected.put("AP3", Double.valueOf(-61.5));
+        expected.put("AP3", -61.5);
 
         Map<String, Double> actual = filter.filteringmethod(measurements);
 

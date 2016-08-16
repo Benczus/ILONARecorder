@@ -7,11 +7,9 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * Created by ilona on 2016.08.09..
- */
+
 //Implementation of the Static Time Windowing Filter.
-public class StaticTimeWindowFilter implements FilterInterface {
+public class StaticTimeWindowFilter implements WiFiRSSIFilteringStrategy {
     private double threshold;
     private int memsize;
 
@@ -29,8 +27,8 @@ public class StaticTimeWindowFilter implements FilterInterface {
             return linkedList.getFirst();
         }
         double filteredValue;
-        Map<String, Double> result = new HashMap<String, Double>();
-        ArrayList<Double> rssiValues = null;
+        Map<String, Double> result = new HashMap<>();
+        ArrayList<Double> rssiValues;
         for (String ssid : getKeys(linkedList)) {
             rssiValues = getWiFiRSSIVector(ssid, linkedList);
             if (rssiValues.size() > 0) {
@@ -49,7 +47,7 @@ public class StaticTimeWindowFilter implements FilterInterface {
     }
 
     private Set<String> getKeys(LinkedList<Map<String, Double>> linkedList) {
-        Set<String> result = new HashSet<String>();
+        Set<String> result = new HashSet<>();
         for (int i = 0; i < linkedList.size(); i++) {
             result.addAll(linkedList.get(i).keySet());
         }

@@ -1,5 +1,6 @@
 package com.example.ilona.ilonarecorder;
 
+import android.os.AsyncTask;
 import android.util.Log;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -14,23 +15,22 @@ import java.net.URL;
 import uni.miskolc.ips.ilona.measurement.model.measurement.Measurement;
 
 
-public class IlonaConnection extends AbstractConnection {
+public abstract class AbstractConnection extends AsyncTask<String, String, String> {
     Measurement measurement;
     String ServerURL;
 
-    public IlonaConnection(Measurement measurement, String ServerURL) {
-        this.ServerURL = ServerURL;
-        this.measurement= measurement;
-    }
-
     @Override
     protected String doInBackground(String... strings) {
+
         try {
+            // Connects to the server which is contained in the ServerURL variable
             HttpURLConnection urlConnection = connectToURL(ServerURL);
+            // Connects to the server
             urlConnection.connect();
             setConnectionParameters(urlConnection);
             OutputStream out = sendJsonToServer(urlConnection);
             String zoneresult = receiveDataFromServer(urlConnection);
+            // Returns the received data to the main activity
             out.close();
             return zoneresult;
         } catch (IOException e) {
@@ -84,4 +84,3 @@ public class IlonaConnection extends AbstractConnection {
         return sb.toString();
     }
 }
-
