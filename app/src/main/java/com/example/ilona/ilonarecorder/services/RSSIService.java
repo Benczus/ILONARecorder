@@ -13,9 +13,7 @@ import com.example.ilona.ilonarecorder.Constants;
 import com.example.ilona.ilonarecorder.filter.StaticTimeWindowFilter;
 import com.example.ilona.ilonarecorder.filter.WiFiRSSIFilteringStrategy;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
