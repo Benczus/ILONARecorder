@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">Ilona Recorder</string>
+    <string name="action_settings">Settings</string>
+    <string name="edit_message">Enter a message</string>
+    <string name="magneto_yaxis">Y axis</string>
+    <string name="magneto_zaxis">Z axis</string>
+    <string name="magneto_xaxis">X axis</string>
+    <string name="getvalues">Get Sensor Values</string>
+    <string name="sendresults">Send Results</string>
+    <string name="get_position">Get Position</string>
+    <string name="UID">User name</string>
+    <string name="PASS">Password</string>
+    <string name="sendToTracking">Send to tracking</string>
+</resources>
