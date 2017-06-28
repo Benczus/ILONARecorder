@@ -320,7 +320,7 @@ public class IlonaActivity extends AppCompatActivity implements SensorEventListe
 
         memsize = preferences.getInt("memsize", 5);
         threshold = preferences.getFloat("threshold", 5);
-        */
+
         //TODO
         //WiFiRSSIFilteringStrategy filter=selectFilter();
         filter = new DynamicTimeWindowFilter(memsize, threshold);
