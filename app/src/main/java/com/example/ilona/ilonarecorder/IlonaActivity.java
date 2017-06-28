@@ -139,7 +139,6 @@ public class IlonaActivity extends AppCompatActivity implements SensorEventListe
         return true;
     }
 
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -149,11 +148,14 @@ public class IlonaActivity extends AppCompatActivity implements SensorEventListe
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            Intent intent = new Intent(this, SettingsActivity.class);
+            startActivity(intent);
             return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
+
 
     public void getPosition(View view) throws ExecutionException, InterruptedException {
         String text;
