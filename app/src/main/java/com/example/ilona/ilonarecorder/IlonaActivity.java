@@ -32,6 +32,8 @@ import com.example.ilona.ilonarecorder.connections.IlonaConnection;
 import com.example.ilona.ilonarecorder.connections.IlonaPositionConnection;
 import com.example.ilona.ilonarecorder.connections.IlonaTrackingConnection;
 import com.example.ilona.ilonarecorder.connections.IlonaZoneConnection;
+import com.example.ilona.ilonarecorder.filter.DynamicTimeWindowFilter;
+import com.example.ilona.ilonarecorder.filter.WiFiRSSIFilteringStrategy;
 import com.example.ilona.ilonarecorder.services.BluetoothService;
 import com.example.ilona.ilonarecorder.services.RSSIService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -45,6 +47,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
@@ -61,8 +64,14 @@ import uni.miskolc.ips.ilona.measurement.model.position.Zone;
 public class IlonaActivity extends AppCompatActivity implements SensorEventListener {
     // variable members
 
+    static WiFiRSSIFilteringStrategy filter;
     private final ResponseReceiver mDownloadStateReceiver = new ResponseReceiver();
+
+    //TODO
     private final ResponseReceiver mBlDownloadReceiver = new ResponseReceiver();
+    double threshold = 5;
+    int memsize = 5;
+    LinkedList<Map<String, Double>> rssiList = new LinkedList<>();
     private SensorManager mSensorManager;
     private Sensor mMagnetometer;
     private float[] magneto;
@@ -156,7 +165,6 @@ public class IlonaActivity extends AppCompatActivity implements SensorEventListe
         return super.onOptionsItemSelected(item);
     }
 
-
     public void getPosition(View view) throws ExecutionException, InterruptedException {
         String text;
         // Starts the method which connects to the server and sends the measurement.
@@ -173,7 +181,6 @@ public class IlonaActivity extends AppCompatActivity implements SensorEventListe
         Toast toast = Toast.makeText(context, text, duration);
         toast.show();
     }
-
 
     //The method runs when the main action button is pressed on the layout.
     //Gets the WiFi, Bluetooth, magnetometer, position coordinates and current zone and
@@ -194,6 +201,8 @@ public class IlonaActivity extends AppCompatActivity implements SensorEventListe
         //Getting the WifiRSSI and bluetooth values from the services.
         if (rssivalue != null) {
             WiFiRSSI rssi = new WiFiRSSI(rssivalue);
+
+
             measurementBuilder.setWifiRSSI(rssi);
         }
 
@@ -224,8 +233,6 @@ public class IlonaActivity extends AppCompatActivity implements SensorEventListe
         toast.show();
     }
 
-    // Sends the previously recorded measurement to the server.
-
     public void sendToServer(View view) throws ExecutionException, InterruptedException {
         String text;
         // Starts the method which connects to the server and sends the measurement.
@@ -242,6 +249,8 @@ public class IlonaActivity extends AppCompatActivity implements SensorEventListe
         Toast toast = Toast.makeText(context, text, duration);
         toast.show();
     }
+
+    // Sends the previously recorded measurement to the server.
 
     public void sendToTracking(View view) throws ExecutionException, InterruptedException {
         // TODO
@@ -264,7 +273,6 @@ public class IlonaActivity extends AppCompatActivity implements SensorEventListe
         Toast toast = Toast.makeText(context, text, duration);
         toast.show();
     }
-
 
     // Magnetometer API method that refreshes the values when they change
     @Override
@@ -303,7 +311,9 @@ public class IlonaActivity extends AppCompatActivity implements SensorEventListe
                 Uri.parse("http://host/path"),
                 Uri.parse("android-app://com.example.ilona.ilonarecorder/http/host/path")
         );
-
+        //TODO
+        //WiFiRSSIFilteringStrategy filter=selectFilter();
+        filter = new DynamicTimeWindowFilter(memsize, threshold);
         AppIndex.AppIndexApi.start(client, viewAction);
         //Toast to remind the user to wait a few moments to get the measurements.
         int duration = Toast.LENGTH_LONG;
@@ -380,13 +390,19 @@ public class IlonaActivity extends AppCompatActivity implements SensorEventListe
 
     }
 
+    private enum FilterEnum {NOFILTER, HORUS, STATIC, DYNAMIC}
+
     // Handles incoming broadcasts from MyIntentService and BluetoothService.
     class ResponseReceiver extends BroadcastReceiver {
 
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
             if (action == Constants.BROADCAST_ACTION) {
-                rssivalue = (HashMap<String, Double>) intent.getSerializableExtra(Constants.EXTENDED_DATA_STATUS);
+                rssiList.add((HashMap<String, Double>) intent.getSerializableExtra(Constants.EXTENDED_DATA_STATUS));
+                if (rssiList.size() > memsize)
+                    rssiList.removeLast();
+                rssivalue = filter.filteringMethod(rssiList);
+
             } else if (action == Constants.BLUETOOTH_BROADCAST) {
                 bluetootharray = new ArrayList<>();
                 bluetootharray = intent.getStringArrayListExtra(Constants.BLUETOOTH_DATA_STATUS);
@@ -394,4 +410,22 @@ public class IlonaActivity extends AppCompatActivity implements SensorEventListe
 
         }
     }
+// TODO filter chooser switch
+/*
+    private WiFiRSSIFilteringStrategy selectFilter() {
+        WiFiRSSIFilteringStrategy filter1;
+        switch (filterEnum){
+        case(HORUS){
+            return  filter1;
+        }
+        case(STATIC){
+                return filter1;
+        }
+        case(DYNAMIC){
+                return filter1;
+        }
+        case (NOFILTER){}
+            return filter1;
+        }
+    }*/
 }
