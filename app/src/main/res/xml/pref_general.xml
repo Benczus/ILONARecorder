@@ -8,17 +8,28 @@
     -->
     <!-- NOTE: EditTextPreference accepts EditText attributes. -->
     <!-- NOTE: EditTextPreference's summary should be set to its value by the activity code. -->
-    <!--
+
    <EditTextPreference
        android:capitalize="words"
-       android:defaultValue="@string/pref_default_display_name"
+       android:defaultValue="@string/default_memory_size"
        android:inputType="textCapWords"
-       android:key="example_text"
+       android:key="memsize"
        android:maxLines="1"
        android:selectAllOnFocus="true"
        android:singleLine="true"
-       android:title="@string/pref_title_display_name" />
-       -->
+       android:title="@string/default_memory_size" />
+
+    <EditTextPreference
+        android:capitalize="words"
+        android:defaultValue="@string/default_treshold_size"
+        android:inputType="textCapWords"
+        android:key="treshold"
+        android:maxLines="1"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:title="@string/default_treshold_size" />
+
+
     <!-- NOTE: Hide buttons to simplify the UI. Users can touch outside the dialog to
          dismiss it. -->
     <!-- NOTE: ListPreference's summary should be set to its value by the activity code. -->

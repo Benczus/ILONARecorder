@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -299,6 +300,7 @@ public class IlonaActivity extends AppCompatActivity implements SensorEventListe
 
     @Override
     public void onStart() {
+
         super.onStart();
         spinner = (Spinner) findViewById(R.id.zone_spinner);
         // ATTENTION: This was auto-generated to implement the App Indexing API.
@@ -311,6 +313,14 @@ public class IlonaActivity extends AppCompatActivity implements SensorEventListe
                 Uri.parse("http://host/path"),
                 Uri.parse("android-app://com.example.ilona.ilonarecorder/http/host/path")
         );
+
+        // TODO
+        // HOW TO GET PREFERENCES
+        SharedPreferences preferences = getSharedPreferences("pref_general", 0);
+
+        memsize = preferences.getInt("memsize", 5);
+        threshold = preferences.getFloat("threshold", 5);
+        */
         //TODO
         //WiFiRSSIFilteringStrategy filter=selectFilter();
         filter = new DynamicTimeWindowFilter(memsize, threshold);

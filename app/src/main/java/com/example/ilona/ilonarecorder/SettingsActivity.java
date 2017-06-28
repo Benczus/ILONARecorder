@@ -192,7 +192,8 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             // updated to reflect the new value, per the Android Design
             // guidelines.
             // itt bindeli a texthez az értéket!
-            // bindPreferenceSummaryToValue(findPreference("example_text"));
+            bindPreferenceSummaryToValue(findPreference("memsize"));
+            bindPreferenceSummaryToValue(findPreference("treshold"));
             bindPreferenceSummaryToValue(findPreference("example_list"));
         }
 
