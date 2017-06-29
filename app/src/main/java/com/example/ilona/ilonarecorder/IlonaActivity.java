@@ -69,12 +69,12 @@ public class IlonaActivity extends AppCompatActivity implements SensorEventListe
 
     static WiFiRSSIFilteringStrategy filter;
     private final ResponseReceiver mDownloadStateReceiver = new ResponseReceiver();
-
     //TODO
     private final ResponseReceiver mBlDownloadReceiver = new ResponseReceiver();
     double threshold = 5;
     int memsize = 5;
     LinkedList<Map<String, Double>> rssiList = new LinkedList<>();
+    private boolean filtering = false;
     private SensorManager mSensorManager;
     private Sensor mMagnetometer;
     private float[] magneto;
@@ -326,7 +326,8 @@ public class IlonaActivity extends AppCompatActivity implements SensorEventListe
         int filternum = preferences.getInt("filter_list", -1);
         if (filternum >= 0) {
             WiFiRSSIFilteringStrategy filter = selectFilter(memsize, threshold);
-        } else
+            filtering = true;
+        } else filtering = false;
         filter = new DynamicTimeWindowFilter(memsize, threshold);
         AppIndex.AppIndexApi.start(client, viewAction);
         //Toast to remind the user to wait a few moments to get the measurements.
@@ -427,8 +428,6 @@ public class IlonaActivity extends AppCompatActivity implements SensorEventListe
         return filter;
     }
 
-    private enum FilterEnum {NOFILTER, HORUS, STATIC, DYNAMIC}
-// TODO filter chooser switch
 
     // Handles incoming broadcasts from MyIntentService and BluetoothService.
     class ResponseReceiver extends BroadcastReceiver {
@@ -436,11 +435,15 @@ public class IlonaActivity extends AppCompatActivity implements SensorEventListe
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
             if (action == Constants.BROADCAST_ACTION) {
-                rssiList.add((HashMap<String, Double>) intent.getSerializableExtra(Constants.EXTENDED_DATA_STATUS));
-                if (rssiList.size() > memsize)
+                rssiList.addFirst((HashMap<String, Double>) intent.getSerializableExtra(Constants.EXTENDED_DATA_STATUS));
+                if (rssiList.size() > memsize) {
                     rssiList.removeLast();
-                rssivalue = filter.filteringMethod(rssiList);
-
+                }
+                if (filtering = true) {
+                    rssivalue = filter.filteringMethod(rssiList);
+                } else {
+                    rssivalue = rssiList.getFirst();
+                }
             } else if (action == Constants.BLUETOOTH_BROADCAST) {
                 bluetootharray = new ArrayList<>();
                 bluetootharray = intent.getStringArrayListExtra(Constants.BLUETOOTH_DATA_STATUS);
