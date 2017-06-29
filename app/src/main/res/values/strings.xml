@@ -29,15 +29,17 @@
     <string name="default_treshold_size">5</string>
 
     <string name="pref_title_add_friends_to_messages">Filter Selection</string>
-    <string-array name="pref_example_list_titles">
+    <string-array name="filter_list_titles">
+        <item>No Filter</item>
         <item>Horus</item>
         <item>Static Time Window</item>
         <item>Dynamic Time Window</item>
     </string-array>
-    <string-array name="pref_example_list_values">
-        <item>1</item>
+    <string-array name="filter_list_values">
+        <item>-1 </item>
         <item>0</item>
-        <item>-1</item>
+        <item>1</item>
+        <item>2</item>
     </string-array>
 
     <!-- Example settings for Data & Sync -->

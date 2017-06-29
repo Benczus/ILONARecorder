@@ -34,6 +34,8 @@ import com.example.ilona.ilonarecorder.connections.IlonaPositionConnection;
 import com.example.ilona.ilonarecorder.connections.IlonaTrackingConnection;
 import com.example.ilona.ilonarecorder.connections.IlonaZoneConnection;
 import com.example.ilona.ilonarecorder.filter.DynamicTimeWindowFilter;
+import com.example.ilona.ilonarecorder.filter.HorusFilter;
+import com.example.ilona.ilonarecorder.filter.StaticTimeWindowFilter;
 import com.example.ilona.ilonarecorder.filter.WiFiRSSIFilteringStrategy;
 import com.example.ilona.ilonarecorder.services.BluetoothService;
 import com.example.ilona.ilonarecorder.services.RSSIService;
@@ -321,8 +323,10 @@ public class IlonaActivity extends AppCompatActivity implements SensorEventListe
         memsize = preferences.getInt("memsize", 5);
         threshold = preferences.getFloat("threshold", 5);
 
-        //TODO
-        //WiFiRSSIFilteringStrategy filter=selectFilter();
+        int filternum = preferences.getInt("filter_list", -1);
+        if (filternum >= 0) {
+            WiFiRSSIFilteringStrategy filter = selectFilter(memsize, threshold);
+        } else
         filter = new DynamicTimeWindowFilter(memsize, threshold);
         AppIndex.AppIndexApi.start(client, viewAction);
         //Toast to remind the user to wait a few moments to get the measurements.
@@ -400,7 +404,31 @@ public class IlonaActivity extends AppCompatActivity implements SensorEventListe
 
     }
 
+    private WiFiRSSIFilteringStrategy selectFilter(int memsize, double threshold) {
+        SharedPreferences preferences = getSharedPreferences("pref_general", 0);
+        WiFiRSSIFilteringStrategy filter = new WiFiRSSIFilteringStrategy() {
+            @Override
+            public Map<String, Double> filteringMethod(LinkedList<Map<String, Double>> linkedList) {
+                return null;
+            }
+        };
+        int filternum = preferences.getInt("filter_list", -1);
+        switch (filternum) {
+            case (0): {
+                filter = new HorusFilter(memsize);
+            }
+            case (1): {
+                filter = new StaticTimeWindowFilter(memsize, threshold);
+            }
+            case (2): {
+                filter = new DynamicTimeWindowFilter(memsize, threshold);
+            }
+        }
+        return filter;
+    }
+
     private enum FilterEnum {NOFILTER, HORUS, STATIC, DYNAMIC}
+// TODO filter chooser switch
 
     // Handles incoming broadcasts from MyIntentService and BluetoothService.
     class ResponseReceiver extends BroadcastReceiver {
@@ -420,22 +448,4 @@ public class IlonaActivity extends AppCompatActivity implements SensorEventListe
 
         }
     }
-// TODO filter chooser switch
-/*
-    private WiFiRSSIFilteringStrategy selectFilter() {
-        WiFiRSSIFilteringStrategy filter1;
-        switch (filterEnum){
-        case(HORUS){
-            return  filter1;
-        }
-        case(STATIC){
-                return filter1;
-        }
-        case(DYNAMIC){
-                return filter1;
-        }
-        case (NOFILTER){}
-            return filter1;
-        }
-    }*/
 }
