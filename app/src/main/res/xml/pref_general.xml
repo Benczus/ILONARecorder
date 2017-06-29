@@ -17,17 +17,17 @@
        android:maxLines="1"
        android:selectAllOnFocus="true"
        android:singleLine="true"
-       android:title="@string/default_memory_size" />
+       android:title="@string/pref_title_memsize" />
 
     <EditTextPreference
         android:capitalize="words"
         android:defaultValue="@string/default_treshold_size"
         android:inputType="textCapWords"
-        android:key="treshold"
+        android:key="threshold"
         android:maxLines="1"
         android:selectAllOnFocus="true"
         android:singleLine="true"
-        android:title="@string/default_treshold_size" />
+        android:title="@string/pref_title_threshold" />
 
 
     <!-- NOTE: Hide buttons to simplify the UI. Users can touch outside the dialog to

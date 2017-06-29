@@ -193,7 +193,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             // guidelines.
             // itt bindeli a texthez az értéket!
             bindPreferenceSummaryToValue(findPreference("memsize"));
-            bindPreferenceSummaryToValue(findPreference("treshold"));
+            bindPreferenceSummaryToValue(findPreference("threshold"));
             bindPreferenceSummaryToValue(findPreference("filter_list"));
         }
 

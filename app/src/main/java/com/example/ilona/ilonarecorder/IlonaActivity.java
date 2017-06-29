@@ -14,6 +14,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -318,17 +319,18 @@ public class IlonaActivity extends AppCompatActivity implements SensorEventListe
 
         // TODO
         // HOW TO GET PREFERENCES
-        SharedPreferences preferences = getSharedPreferences("pref_general", 0);
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
 
-        memsize = preferences.getInt("memsize", 5);
-        threshold = preferences.getFloat("threshold", 5);
+        memsize = Integer.parseInt(preferences.getString("memsize", "5"));
+        threshold = Float.parseFloat(preferences.getString("threshold", "5.0"));
 
-        int filternum = preferences.getInt("filter_list", -1);
+        int filternum = Integer.parseInt(preferences.getString("filter_list", "-1"));
         if (filternum >= 0) {
             WiFiRSSIFilteringStrategy filter = selectFilter(memsize, threshold);
             filtering = true;
         } else filtering = false;
         filter = new DynamicTimeWindowFilter(memsize, threshold);
+
         AppIndex.AppIndexApi.start(client, viewAction);
         //Toast to remind the user to wait a few moments to get the measurements.
         int duration = Toast.LENGTH_LONG;
