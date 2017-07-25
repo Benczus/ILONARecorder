@@ -94,7 +94,9 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom"
                 android:onClick="sendToServer"
-                android:text="@string/sendresults" />
+                android:text="@string/sendresults"
+                android:clickable="false"
+                />
 <!--
             <Button
                 android:id="@+id/authButton"
